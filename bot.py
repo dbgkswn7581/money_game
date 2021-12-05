@@ -11,6 +11,7 @@ from firebase_admin import db
 from get_time import get_time
 from randoms import random_value
 from replace import replace_amount
+from graph import save_graph
 
 client = commands.Bot(command_prefix='$')
 @client.event
@@ -481,6 +482,8 @@ async def refresh():
   dic_in_now(시루, 'sl', time)
   dic_in_now(코어, 'ce', time)
 
+
+
 ##############################################################################################################################
 
 def get_value(dic):
@@ -868,7 +871,39 @@ async def reg(ctx, *text):
                         )
                 except:
                   await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
-               
+
+    elif order == '그래프' or order == 'ㄱㄿ' or order == 'ㄱㄹㅍ' or order == 'rfv' or order == 'graph':
+      if len(text) > 2:
+        await ctx.send('잘못된 명령어입니다.\n예시 : `$주식 그래프 펭귄증권`')
+      else:
+        if len(text) == 1:
+            save_graph('all')
+
+            with open('%s.png'%'all', 'rb') as f:
+                picture = discord.File(f)
+                await ctx.send(file=picture)
+        else:
+            company = text[1]
+            if type(company) != str:
+                await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+            else:
+                com = find_company(company)
+                re_company = return_TF_company(com)
+                
+                if re_company == 'F':
+                    await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+                
+                else:
+                    ref = db.reference()
+                    dic = ref.get()
+                    com = find_company(company)
+
+                    save_graph(com)
+                    
+                    with open('%s.png'%com, 'rb') as f:
+                        picture = discord.File(f)
+                        await ctx.send(file=picture)
+
 @client.command(name="wt")
 async def reg(ctx, *text):
   user_keys = []
@@ -1131,7 +1166,39 @@ async def reg(ctx, *text):
                         )
                 except:
                   await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
-       
+
+    elif order == '그래프' or order == 'ㄱㄿ' or order == 'ㄱㄹㅍ' or order == 'rfv' or order == 'graph':
+      if len(text) > 2:
+        await ctx.send('잘못된 명령어입니다.\n예시 : `$주식 그래프 펭귄증권`')
+      else:
+        if len(text) == 1:
+            save_graph('all')
+
+            with open('%s.png'%'all', 'rb') as f:
+                picture = discord.File(f)
+                await ctx.send(file=picture)
+        else:
+            company = text[1]
+            if type(company) != str:
+                await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+            else:
+                com = find_company(company)
+                re_company = return_TF_company(com)
+                
+                if re_company == 'F':
+                    await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+                
+                else:
+                    ref = db.reference()
+                    dic = ref.get()
+                    com = find_company(company)
+
+                    save_graph(com)
+                    
+                    with open('%s.png'%com, 'rb') as f:
+                        picture = discord.File(f)
+                        await ctx.send(file=picture)
+   
 @client.command(name="ㅈㅅ")
 async def reg(ctx, *text):
   user_keys = []
@@ -1394,25 +1461,57 @@ async def reg(ctx, *text):
                         )
                 except:
                   await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
-         
+
+    elif order == '그래프' or order == 'ㄱㄿ' or order == 'ㄱㄹㅍ' or order == 'rfv' or order == 'graph':
+      if len(text) > 2:
+        await ctx.send('잘못된 명령어입니다.\n예시 : `$주식 그래프 펭귄증권`')
+      else:
+        if len(text) == 1:
+            save_graph('all')
+
+            with open('%s.png'%'all', 'rb') as f:
+                picture = discord.File(f)
+                await ctx.send(file=picture)
+        else:
+            company = text[1]
+            if type(company) != str:
+                await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+            else:
+                com = find_company(company)
+                re_company = return_TF_company(com)
+                
+                if re_company == 'F':
+                    await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
+                
+                else:
+                    ref = db.reference()
+                    dic = ref.get()
+                    com = find_company(company)
+
+                    save_graph(com)
+                    
+                    with open('%s.png'%com, 'rb') as f:
+                        picture = discord.File(f)
+                        await ctx.send(file=picture)
+
 
 ################################################################################################################################################
 
 @client.command(name='도움말')
 async def help(ctx):
-  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
+  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$주식 그래프 (회사명)` : 해당 회사의 주식 변동 그래프를 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
 
 @client.command(name='명령어')
 async def help(ctx):
-  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
+  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$주식 그래프 (회사명)` : 해당 회사의 주식 변동 그래프를 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
 
 @client.command(name='?')
 async def help(ctx):
-  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
+  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$주식 그래프 (회사명)` : 해당 회사의 주식 변동 그래프를 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
 
 @client.command(name='command')
 async def help(ctx):
-  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
+  await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$주식 그래프 (회사명)` : 해당 회사의 주식 변동 그래프를 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
 
 ##############################################################################################################################
 
@@ -1539,6 +1638,7 @@ async def stop(ctx, *text):
 
         await ctx.send(embed=embed)
 
- 
+  
+
 
 client.run(os.environ['token'])
