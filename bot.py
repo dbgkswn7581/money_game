@@ -990,38 +990,68 @@ async def reg(ctx, *text):
               await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
             
             else:
-              try:
-                amount = int(amount)
-                if amount <= 0:
-                  await ctx.send('수량 부분에 자연수만 입력해주십시오.')
+              if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                com = find_company(company)
+                kr_com = kr_company(com)
+
+                ref = db.reference()
+                dic = ref.get()
+                data = dic[str(user_id)]
+                money = data['money']
+                taked = data[com]['amount']
+                now_num = find_now_num(dic[com])
+                now_value = dic[com][now_num]['value']
+
+                amount = int(money / now_value)
+
+                if amount == 0:
+                  await ctx.send('보유 금액이 부족합니다.')
+
                 else:
-                  com = find_company(company)
-                  kr_com = kr_company(com)
-
                   ref = db.reference()
-                  dic = ref.get()
-                  data = dic[str(user_id)]
-                  money = data['money']
-                  taked = data[com]['amount']
-                  now_num = find_now_num(dic[com])
-                  now_value = dic[com][now_num]['value']
                   
+                  ref.child(str(user_id)).child(com).child('value').set(now_value)
+                  ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
+                  ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
 
-                  if (amount * now_value) > money:
-                    await ctx.send('보유 금액이 부족합니다.')
+                  await ctx.send(
+                    '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
+                    %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                    )
+
+              else:
+                try:
+                  amount = int(amount)
+                  if amount <= 0:
+                    await ctx.send('수량 부분에 자연수만 입력해주십시오.')
                   else:
+                    com = find_company(company)
+                    kr_com = kr_company(com)
+
                     ref = db.reference()
                     dic = ref.get()
+                    data = dic[str(user_id)]
+                    money = data['money']
+                    taked = data[com]['amount']
+                    now_num = find_now_num(dic[com])
+                    now_value = dic[com][now_num]['value']
                     
-                    ref.child(str(user_id)).child(com).child('value').set(now_value)
-                    ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
-                    ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
-                    await ctx.send(
-                      '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
-                      %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
-                      )
-              except:
-                await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
+
+                    if (amount * now_value) > money:
+                      await ctx.send('보유 금액이 부족합니다.')
+                    else:
+                      ref = db.reference()
+                      dic = ref.get()
+                      
+                      ref.child(str(user_id)).child(com).child('value').set(now_value)
+                      ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
+                      ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
+                      await ctx.send(
+                        '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
+                        %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                        )
+                except:
+                  await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
 
     elif order == '판매' or order == 'ㅍㅁ' or order == 'va':
       ref = db.reference()
@@ -1049,36 +1079,58 @@ async def reg(ctx, *text):
               await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
             
             else:
-              try:
-                amount = int(amount)
-                if amount <= 0:
-                  await ctx.send('수량 부분에 자연수만 입력해주십시오.')
-                else:
-                  com = find_company(company)
-                  kr_com = kr_company(com)
+              if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                com = find_company(company)
+                kr_com = kr_company(com)
 
-                  ref = db.reference()
-                  dic = ref.get()
-                  data = dic[str(user_id)]
-                  money = data['money']
-                  taked = data[com]['amount']
-                  now_num = find_now_num(dic[com])
-                  now_value = dic[com][now_num]['value']
+                ref = db.reference()
+                dic = ref.get()
+                data = dic[str(user_id)]
+                money = data['money']
+                taked = data[com]['amount']
+                now_num = find_now_num(dic[com])
+                now_value = dic[com][now_num]['value']
 
-                  if amount > taked:
-                    await ctx.send('보유 수량이 입력하신 판매 수량보다 적습니다.')
-                  else:
-                    ref = db.reference()
-                    dic = ref.get()
-                    ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
-                    ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
-                    await ctx.send(
-                      '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
+                amount = taked
+
+                ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
+                ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
+
+                await ctx.send(
+                  '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
                       %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
                       )
-              except:
-                await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
-   
+              else:
+                try:
+                  amount = int(amount)
+                  if amount <= 0:
+                    await ctx.send('수량 부분에 자연수만 입력해주십시오.')
+                  else:
+                    com = find_company(company)
+                    kr_com = kr_company(com)
+
+                    ref = db.reference()
+                    dic = ref.get()
+                    data = dic[str(user_id)]
+                    money = data['money']
+                    taked = data[com]['amount']
+                    now_num = find_now_num(dic[com])
+                    now_value = dic[com][now_num]['value']
+
+                    if amount > taked:
+                      await ctx.send('보유 수량이 입력하신 판매 수량보다 적습니다.')
+                    else:
+                      ref = db.reference()
+                      dic = ref.get()
+                      ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
+                      ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
+                      await ctx.send(
+                        '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
+                        %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                        )
+                except:
+                  await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
+       
 @client.command(name="ㅈㅅ")
 async def reg(ctx, *text):
   user_keys = []
@@ -1201,38 +1253,68 @@ async def reg(ctx, *text):
               await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
             
             else:
-              try:
-                amount = int(amount)
-                if amount <= 0:
-                  await ctx.send('수량 부분에 자연수만 입력해주십시오.')
+              if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                com = find_company(company)
+                kr_com = kr_company(com)
+
+                ref = db.reference()
+                dic = ref.get()
+                data = dic[str(user_id)]
+                money = data['money']
+                taked = data[com]['amount']
+                now_num = find_now_num(dic[com])
+                now_value = dic[com][now_num]['value']
+
+                amount = int(money / now_value)
+
+                if amount == 0:
+                  await ctx.send('보유 금액이 부족합니다.')
+
                 else:
-                  com = find_company(company)
-                  kr_com = kr_company(com)
-
                   ref = db.reference()
-                  dic = ref.get()
-                  data = dic[str(user_id)]
-                  money = data['money']
-                  taked = data[com]['amount']
-                  now_num = find_now_num(dic[com])
-                  now_value = dic[com][now_num]['value']
                   
+                  ref.child(str(user_id)).child(com).child('value').set(now_value)
+                  ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
+                  ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
 
-                  if (amount * now_value) > money:
-                    await ctx.send('보유 금액이 부족합니다.')
+                  await ctx.send(
+                    '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
+                    %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                    )
+
+              else:
+                try:
+                  amount = int(amount)
+                  if amount <= 0:
+                    await ctx.send('수량 부분에 자연수만 입력해주십시오.')
                   else:
+                    com = find_company(company)
+                    kr_com = kr_company(com)
+
                     ref = db.reference()
                     dic = ref.get()
+                    data = dic[str(user_id)]
+                    money = data['money']
+                    taked = data[com]['amount']
+                    now_num = find_now_num(dic[com])
+                    now_value = dic[com][now_num]['value']
                     
-                    ref.child(str(user_id)).child(com).child('value').set(now_value)
-                    ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
-                    ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
-                    await ctx.send(
-                      '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
-                      %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
-                      )
-              except:
-                await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
+
+                    if (amount * now_value) > money:
+                      await ctx.send('보유 금액이 부족합니다.')
+                    else:
+                      ref = db.reference()
+                      dic = ref.get()
+                      
+                      ref.child(str(user_id)).child(com).child('value').set(now_value)
+                      ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
+                      ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
+                      await ctx.send(
+                        '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'
+                        %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                        )
+                except:
+                  await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
 
     elif order == '판매' or order == 'ㅍㅁ' or order == 'va':
       ref = db.reference()
@@ -1260,36 +1342,58 @@ async def reg(ctx, *text):
               await ctx.send('잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오')
             
             else:
-              try:
-                amount = int(amount)
-                if amount <= 0:
-                  await ctx.send('수량 부분에 자연수만 입력해주십시오.')
-                else:
-                  com = find_company(company)
-                  kr_com = kr_company(com)
+              if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                com = find_company(company)
+                kr_com = kr_company(com)
 
-                  ref = db.reference()
-                  dic = ref.get()
-                  data = dic[str(user_id)]
-                  money = data['money']
-                  taked = data[com]['amount']
-                  now_num = find_now_num(dic[com])
-                  now_value = dic[com][now_num]['value']
+                ref = db.reference()
+                dic = ref.get()
+                data = dic[str(user_id)]
+                money = data['money']
+                taked = data[com]['amount']
+                now_num = find_now_num(dic[com])
+                now_value = dic[com][now_num]['value']
 
-                  if amount > taked:
-                    await ctx.send('보유 수량이 입력하신 판매 수량보다 적습니다.')
-                  else:
-                    ref = db.reference()
-                    dic = ref.get()
-                    ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
-                    ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
-                    await ctx.send(
-                      '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
+                amount = taked
+
+                ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
+                ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
+
+                await ctx.send(
+                  '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
                       %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
                       )
-              except:
-                await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
-   
+              else:
+                try:
+                  amount = int(amount)
+                  if amount <= 0:
+                    await ctx.send('수량 부분에 자연수만 입력해주십시오.')
+                  else:
+                    com = find_company(company)
+                    kr_com = kr_company(com)
+
+                    ref = db.reference()
+                    dic = ref.get()
+                    data = dic[str(user_id)]
+                    money = data['money']
+                    taked = data[com]['amount']
+                    now_num = find_now_num(dic[com])
+                    now_value = dic[com][now_num]['value']
+
+                    if amount > taked:
+                      await ctx.send('보유 수량이 입력하신 판매 수량보다 적습니다.')
+                    else:
+                      ref = db.reference()
+                      dic = ref.get()
+                      ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
+                      ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
+                      await ctx.send(
+                        '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'
+                        %(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                        )
+                except:
+                  await ctx.send('수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```')
+         
 
 ################################################################################################################################################
 
@@ -1433,12 +1537,6 @@ async def stop(ctx, *text):
         )
 
         await ctx.send(embed=embed)
-
-  
-
-  
-
-
 
 
 client.run(os.environ['token'])
