@@ -410,13 +410,12 @@ async def signout(ctx):
 
 ##############################################################################################
 
-def dic_in_now(dic, com):
+def dic_in_now(dic, com, time):
   for i in range(1, 11):
     now = dic[i]['now']
     if now == 1:
       value = dic[i]['value']
       rvalue = random_value(value)
-      time = get_time()
       if i == 10:
         i = str(i)
         ref = db.reference()
@@ -469,16 +468,18 @@ async def refresh():
   시루 = dic['sl']
   코어 = dic['ce']
 
-  dic_in_now(펭귄, 'pg')
-  dic_in_now(시네, 'sn')
-  dic_in_now(마코, 'mk')
-  dic_in_now(윤아, 'ua')
-  dic_in_now(냐룽, 'nl')
-  dic_in_now(판다, 'pd')
-  dic_in_now(가온, 'go')
-  dic_in_now(티칩, 'tc')
-  dic_in_now(시루, 'sl')
-  dic_in_now(코어, 'ce')
+  time = get_time()
+
+  dic_in_now(펭귄, 'pg', time)
+  dic_in_now(시네, 'sn', time)
+  dic_in_now(마코, 'mk', time)
+  dic_in_now(윤아, 'ua', time)
+  dic_in_now(냐룽, 'nl', time)
+  dic_in_now(판다, 'pd', time)
+  dic_in_now(가온, 'go', time)
+  dic_in_now(티칩, 'tc', time)
+  dic_in_now(시루, 'sl', time)
+  dic_in_now(코어, 'ce', time)
 
 ##############################################################################################################################
 
@@ -1538,5 +1539,6 @@ async def stop(ctx, *text):
 
         await ctx.send(embed=embed)
 
+ 
 
 client.run(os.environ['token'])
