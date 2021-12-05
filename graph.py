@@ -2,7 +2,12 @@ from matplotlib import pyplot as plt
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-from bot import find_now_num
+
+def find_now_num(dic):
+  for i in range(1, 11):
+    now = dic[i]['now']
+    if now == 1:
+      return i
 
 
 def save_graph(com):
