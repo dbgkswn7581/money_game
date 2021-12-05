@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-from main import find_now_num
+from bot import find_now_num
 
 
 def save_graph(com):
