@@ -54,7 +54,7 @@ def random_value(value):
 
 
     if llii == 'sp':
-        return value * e
+        return int(value * e)
     else:
         if cho == 'plus':
             return value + num
