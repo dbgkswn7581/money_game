@@ -1409,5 +1409,4 @@ async def stop(ctx, *text):
 
 
 
-# client.run(os.environ['token'])
-client.run('OTExNDE0NTY0MzgwMzYwNzA1.YZhC9Q.Eawipk95Kyzv2XKMd_pByIBQGtc')
+client.run(os.environ['token'])
