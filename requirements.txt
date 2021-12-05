@@ -3,6 +3,5 @@ asyncio
 discord
 datetime
 firebase_admin
-requests
 numpy
 
