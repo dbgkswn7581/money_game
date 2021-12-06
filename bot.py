@@ -1926,7 +1926,6 @@ async def rank(ctx, *text):
     import operator
 
     rank = dict(sorted(moneys.items(), key=operator.itemgetter(1), reverse=True))
-    print(rank)
     moneys = list(rank.values())
     moneys.sort()
     moneys.reverse()
@@ -2129,7 +2128,6 @@ async def rank(ctx, *text):
     import operator
 
     rank = dict(sorted(moneys.items(), key=operator.itemgetter(1), reverse=True))
-    print(rank)
     moneys = list(rank.values())
     moneys.sort()
     moneys.reverse()
@@ -2332,7 +2330,6 @@ async def rank(ctx, *text):
     import operator
 
     rank = dict(sorted(moneys.items(), key=operator.itemgetter(1), reverse=True))
-    print(rank)
     moneys = list(rank.values())
     moneys.sort()
     moneys.reverse()
