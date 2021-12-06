@@ -904,6 +904,78 @@ async def reg(ctx, *text):
                         picture = discord.File(f)
                         await ctx.send(file=picture)
 
+    elif len(text) == 1:
+      nick = order
+      ref = db.reference()
+      dic = ref.get()
+      del dic['pg']
+      del dic['sn']
+      del dic['mk']
+      del dic['ua']
+      del dic['nl']
+      del dic['pd']
+      del dic['go']
+      del dic['tc']
+      del dic['sl']
+      del dic['ce']
+      del dic['admin']
+
+      money = str()
+      amount = str()
+
+      user_ids = list(dic.keys())
+      for i in user_ids:
+        if nick == dic[str(i)]['nickname']:
+          user_id = i
+          money = dic[str(i)]['money']
+          amount = dic[str(i)]['ce']['amount'] + dic[str(i)]['go']['amount'] + dic[str(i)]['mk']['amount'] + dic[str(i)]['nl']['amount'] + dic[str(i)]['pd']['amount'] + dic[str(i)]['sl']['amount'] + dic[str(i)]['sn']['amount'] + dic[str(i)]['tc']['amount'] + dic[str(i)]['ua']['amount'] + dic[str(i)]['pg']['amount']
+      
+      if money == '' and amount == '':
+        await ctx.send('입력하신 닉네임은 존재하지 않는 유저입니다.')
+      else:
+        ref = db.reference()
+        dic = ref.get()
+        data = dic[str(user_id)]
+        nickname = data['nickname']
+
+        펭귄 = [data['pg']['amount'], data['pg']['value']]
+        시네 = [data['sn']['amount'], data['sn']['value']]
+        마코 = [data['mk']['amount'], data['mk']['value']]
+        윤아 = [data['ua']['amount'], data['ua']['value']]
+        냐룽 = [data['nl']['amount'], data['nl']['value']]
+        판다 = [data['pd']['amount'], data['pd']['value']]
+        가온 = [data['go']['amount'], data['go']['value']]
+        티칩 = [data['tc']['amount'], data['tc']['value']]
+        시루 = [data['sl']['amount'], data['sl']['value']]
+        코어 = [data['ce']['amount'], data['ce']['value']]
+
+        pg = find_now_value(dic['pg'])
+        sn = find_now_value(dic['sn'])
+        mk = find_now_value(dic['mk'])
+        ua = find_now_value(dic['ua'])
+        nl = find_now_value(dic['nl'])
+        pd = find_now_value(dic['pd'])
+        go = find_now_value(dic['go'])
+        tc = find_now_value(dic['tc'])
+        sl = find_now_value(dic['sl'])
+        ce = find_now_value(dic['ce'])
+
+
+
+        await ctx.send('**%s 님의 주식 정보예요.**```md\n  회사.     보유량.\n============================\n- 펭귄증권   <%s 주>\n  손익: < %s >\n- 시네제약   <%s 주>\n  손익: < %s >\n- 마코분식   <%s 주>\n  손익: < %s >\n- 윤아마켓   <%s 주>\n  손익: < %s >\n- 냐룽제과   <%s 주>\n  손익: < %s >\n- 판다은행   <%s 주>\n  손익: < %s >\n- 가온그룹   <%s 주>\n  손익: < %s >\n- 티칩화학   <%s 주>\n  손익: < %s >\n- 시루전자   <%s 주>\n  손익: < %s >\n- 코어건설   <%s 주>\n  손익: < %s >```'
+        %(nickname, 
+        replace_amount(펭귄[0]), find_plus_or_minus(펭귄[1],pg,펭귄[0]), 
+        replace_amount(시네[0]), find_plus_or_minus(시네[1],sn,시네[0]), 
+        replace_amount(마코[0]), find_plus_or_minus(마코[1],mk,마코[0]), 
+        replace_amount(윤아[0]), find_plus_or_minus(윤아[1],ua,윤아[0]), 
+        replace_amount(냐룽[0]), find_plus_or_minus(냐룽[1],nl,냐룽[0]), 
+        replace_amount(판다[0]), find_plus_or_minus(판다[1],pd,판다[0]), 
+        replace_amount(가온[0]), find_plus_or_minus(가온[1],go,가온[0]), 
+        replace_amount(티칩[0]), find_plus_or_minus(티칩[1],tc,티칩[0]), 
+        replace_amount(시루[0]), find_plus_or_minus(시루[1],sl,시루[0]), 
+        replace_amount(코어[0]), find_plus_or_minus(코어[1],ce,코어[0])))
+
+
 @client.command(name="wt")
 async def reg(ctx, *text):
   user_keys = []
@@ -1198,7 +1270,78 @@ async def reg(ctx, *text):
                     with open('%s.png'%com, 'rb') as f:
                         picture = discord.File(f)
                         await ctx.send(file=picture)
-   
+
+    elif len(text) == 1:
+      nick = order
+      ref = db.reference()
+      dic = ref.get()
+      del dic['pg']
+      del dic['sn']
+      del dic['mk']
+      del dic['ua']
+      del dic['nl']
+      del dic['pd']
+      del dic['go']
+      del dic['tc']
+      del dic['sl']
+      del dic['ce']
+      del dic['admin']
+
+      money = str()
+      amount = str()
+
+      user_ids = list(dic.keys())
+      for i in user_ids:
+        if nick == dic[str(i)]['nickname']:
+          user_id = i
+          money = dic[str(i)]['money']
+          amount = dic[str(i)]['ce']['amount'] + dic[str(i)]['go']['amount'] + dic[str(i)]['mk']['amount'] + dic[str(i)]['nl']['amount'] + dic[str(i)]['pd']['amount'] + dic[str(i)]['sl']['amount'] + dic[str(i)]['sn']['amount'] + dic[str(i)]['tc']['amount'] + dic[str(i)]['ua']['amount'] + dic[str(i)]['pg']['amount']
+      
+      if money == '' and amount == '':
+        await ctx.send('입력하신 닉네임은 존재하지 않는 유저입니다.')
+      else:
+        ref = db.reference()
+        dic = ref.get()
+        data = dic[str(user_id)]
+        nickname = data['nickname']
+
+        펭귄 = [data['pg']['amount'], data['pg']['value']]
+        시네 = [data['sn']['amount'], data['sn']['value']]
+        마코 = [data['mk']['amount'], data['mk']['value']]
+        윤아 = [data['ua']['amount'], data['ua']['value']]
+        냐룽 = [data['nl']['amount'], data['nl']['value']]
+        판다 = [data['pd']['amount'], data['pd']['value']]
+        가온 = [data['go']['amount'], data['go']['value']]
+        티칩 = [data['tc']['amount'], data['tc']['value']]
+        시루 = [data['sl']['amount'], data['sl']['value']]
+        코어 = [data['ce']['amount'], data['ce']['value']]
+
+        pg = find_now_value(dic['pg'])
+        sn = find_now_value(dic['sn'])
+        mk = find_now_value(dic['mk'])
+        ua = find_now_value(dic['ua'])
+        nl = find_now_value(dic['nl'])
+        pd = find_now_value(dic['pd'])
+        go = find_now_value(dic['go'])
+        tc = find_now_value(dic['tc'])
+        sl = find_now_value(dic['sl'])
+        ce = find_now_value(dic['ce'])
+
+
+
+        await ctx.send('**%s 님의 주식 정보예요.**```md\n  회사.     보유량.\n============================\n- 펭귄증권   <%s 주>\n  손익: < %s >\n- 시네제약   <%s 주>\n  손익: < %s >\n- 마코분식   <%s 주>\n  손익: < %s >\n- 윤아마켓   <%s 주>\n  손익: < %s >\n- 냐룽제과   <%s 주>\n  손익: < %s >\n- 판다은행   <%s 주>\n  손익: < %s >\n- 가온그룹   <%s 주>\n  손익: < %s >\n- 티칩화학   <%s 주>\n  손익: < %s >\n- 시루전자   <%s 주>\n  손익: < %s >\n- 코어건설   <%s 주>\n  손익: < %s >```'
+        %(nickname, 
+        replace_amount(펭귄[0]), find_plus_or_minus(펭귄[1],pg,펭귄[0]), 
+        replace_amount(시네[0]), find_plus_or_minus(시네[1],sn,시네[0]), 
+        replace_amount(마코[0]), find_plus_or_minus(마코[1],mk,마코[0]), 
+        replace_amount(윤아[0]), find_plus_or_minus(윤아[1],ua,윤아[0]), 
+        replace_amount(냐룽[0]), find_plus_or_minus(냐룽[1],nl,냐룽[0]), 
+        replace_amount(판다[0]), find_plus_or_minus(판다[1],pd,판다[0]), 
+        replace_amount(가온[0]), find_plus_or_minus(가온[1],go,가온[0]), 
+        replace_amount(티칩[0]), find_plus_or_minus(티칩[1],tc,티칩[0]), 
+        replace_amount(시루[0]), find_plus_or_minus(시루[1],sl,시루[0]), 
+        replace_amount(코어[0]), find_plus_or_minus(코어[1],ce,코어[0])))
+
 @client.command(name="ㅈㅅ")
 async def reg(ctx, *text):
   user_keys = []
@@ -1494,6 +1637,77 @@ async def reg(ctx, *text):
                         picture = discord.File(f)
                         await ctx.send(file=picture)
 
+    elif len(text) == 1:
+      nick = order
+      ref = db.reference()
+      dic = ref.get()
+      del dic['pg']
+      del dic['sn']
+      del dic['mk']
+      del dic['ua']
+      del dic['nl']
+      del dic['pd']
+      del dic['go']
+      del dic['tc']
+      del dic['sl']
+      del dic['ce']
+      del dic['admin']
+
+      money = str()
+      amount = str()
+
+      user_ids = list(dic.keys())
+      for i in user_ids:
+        if nick == dic[str(i)]['nickname']:
+          user_id = i
+          money = dic[str(i)]['money']
+          amount = dic[str(i)]['ce']['amount'] + dic[str(i)]['go']['amount'] + dic[str(i)]['mk']['amount'] + dic[str(i)]['nl']['amount'] + dic[str(i)]['pd']['amount'] + dic[str(i)]['sl']['amount'] + dic[str(i)]['sn']['amount'] + dic[str(i)]['tc']['amount'] + dic[str(i)]['ua']['amount'] + dic[str(i)]['pg']['amount']
+      
+      if money == '' and amount == '':
+        await ctx.send('입력하신 닉네임은 존재하지 않는 유저입니다.')
+      else:
+        ref = db.reference()
+        dic = ref.get()
+        data = dic[str(user_id)]
+        nickname = data['nickname']
+
+        펭귄 = [data['pg']['amount'], data['pg']['value']]
+        시네 = [data['sn']['amount'], data['sn']['value']]
+        마코 = [data['mk']['amount'], data['mk']['value']]
+        윤아 = [data['ua']['amount'], data['ua']['value']]
+        냐룽 = [data['nl']['amount'], data['nl']['value']]
+        판다 = [data['pd']['amount'], data['pd']['value']]
+        가온 = [data['go']['amount'], data['go']['value']]
+        티칩 = [data['tc']['amount'], data['tc']['value']]
+        시루 = [data['sl']['amount'], data['sl']['value']]
+        코어 = [data['ce']['amount'], data['ce']['value']]
+
+        pg = find_now_value(dic['pg'])
+        sn = find_now_value(dic['sn'])
+        mk = find_now_value(dic['mk'])
+        ua = find_now_value(dic['ua'])
+        nl = find_now_value(dic['nl'])
+        pd = find_now_value(dic['pd'])
+        go = find_now_value(dic['go'])
+        tc = find_now_value(dic['tc'])
+        sl = find_now_value(dic['sl'])
+        ce = find_now_value(dic['ce'])
+
+
+
+        await ctx.send('**%s 님의 주식 정보예요.**```md\n  회사.     보유량.\n============================\n- 펭귄증권   <%s 주>\n  손익: < %s >\n- 시네제약   <%s 주>\n  손익: < %s >\n- 마코분식   <%s 주>\n  손익: < %s >\n- 윤아마켓   <%s 주>\n  손익: < %s >\n- 냐룽제과   <%s 주>\n  손익: < %s >\n- 판다은행   <%s 주>\n  손익: < %s >\n- 가온그룹   <%s 주>\n  손익: < %s >\n- 티칩화학   <%s 주>\n  손익: < %s >\n- 시루전자   <%s 주>\n  손익: < %s >\n- 코어건설   <%s 주>\n  손익: < %s >```'
+        %(nickname, 
+        replace_amount(펭귄[0]), find_plus_or_minus(펭귄[1],pg,펭귄[0]), 
+        replace_amount(시네[0]), find_plus_or_minus(시네[1],sn,시네[0]), 
+        replace_amount(마코[0]), find_plus_or_minus(마코[1],mk,마코[0]), 
+        replace_amount(윤아[0]), find_plus_or_minus(윤아[1],ua,윤아[0]), 
+        replace_amount(냐룽[0]), find_plus_or_minus(냐룽[1],nl,냐룽[0]), 
+        replace_amount(판다[0]), find_plus_or_minus(판다[1],pd,판다[0]), 
+        replace_amount(가온[0]), find_plus_or_minus(가온[1],go,가온[0]), 
+        replace_amount(티칩[0]), find_plus_or_minus(티칩[1],tc,티칩[0]), 
+        replace_amount(시루[0]), find_plus_or_minus(시루[1],sl,시루[0]), 
+        replace_amount(코어[0]), find_plus_or_minus(코어[1],ce,코어[0])))
+
 
 ################################################################################################################################################
 
@@ -1514,6 +1728,7 @@ async def help(ctx):
   await ctx.send('`$가입 (닉네임)`  : 시스템에 가입합니다.\n`$탈퇴` : 시스템에서 탈퇴합니다.\n`$주식` : 현재 주식 현황을 확인합니다.\n`$주식 구매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 구매합니다.\n`$주식 판매 (회사명) (수량)` : 해당 회사의 주식을 수량만큼 판매합니다.\n`$주식 나` : 현재 본인이 보유중인 주식을 확인할 수 있습니다.\n`$주식 그래프 (회사명)` : 해당 회사의 주식 변동 그래프를 확인할 수 있습니다.\n`$돈` : 본인 정보를 확인할 수 있습니다.\n```diff\n+ 위 명령어는 자음 또는 영어로 입력할 수 있습니다.```')
 
 ##############################################################################################################################
+
 @client.command(name='돈')
 async def myself(ctx, *text):
   if len(text) == 0:
@@ -1680,9 +1895,8 @@ async def myself(ctx, *text):
       await ctx.send(embed=embed)
 
 
-
 ##############################################################################################################################
-    
+
 @client.command(name='start')
 async def start(ctx, *text):
     pw = text[0]
@@ -1745,8 +1959,6 @@ async def stop(ctx, *text):
         )
 
         await ctx.send(embed=embed)
-
-  
 
 
 client.run(os.environ['token'])
