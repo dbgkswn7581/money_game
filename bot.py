@@ -1896,6 +1896,1712 @@ async def myself(ctx, *text):
 
 ##############################################################################################################################
 
+def replace_box(step):
+  if step == '1':
+    return 1000
+  elif step == '2':
+    return 10000
+  elif step == '3':
+    return 100000
+  elif step == '4':
+    return 1000000
+  elif step == '5':
+    return 10000000
+  elif step == '6':
+    return 100000000
+  elif step == '7':
+    return 1000000000
+  elif step == '8':
+    return 10000000000
+
+@client.command(name='뽑기')
+async def draw(ctx, *text):
+  if len(text) == 0:
+    await ctx.send('`$뽑기 상점` : 뽑기 상자 목록과 가격을 확인합니다.\n`$뽑기 나` : 본인의 상자 보유 여부를 확인합니다.\n`$뽑기 구매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 구매합니다.\n`$뽑기 판매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 판매합니다.\n`$뽑기 오픈 (단계) (수량)` : (수량)만큼 상자를 오픈합니다.')
+  elif len(text) == 1:
+    ref = db.reference()
+    dic = ref.get()
+    del dic['pg']
+    del dic['sn']
+    del dic['mk']
+    del dic['ua']
+    del dic['nl']
+    del dic['pd']
+    del dic['go']
+    del dic['tc']
+    del dic['sl']
+    del dic['ce']
+    del dic['admin']
+
+    user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
+
+    order = text[0]
+
+    if order == '상점' or order == 'tw' or order == 'ㅅㅈ' or order == 'store' or order == 'shop':
+      embed = discord.Embed(
+        title = ':shopping_cart: 뽑기 상점',
+        color = 0x009FFF
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```diff\n+ 가격 : 1,000 코인\n+ 뽑기 시 0 ~ 10만 코인이 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 1단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```diff\n+ 가격 : 1만 코인\n+ 뽑기 시 0 ~ 100만 코인 또는 1단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 2단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```diff\n+ 가격 : 10만 코인\n+ 뽑기 시 0 ~ 1000만 코인 또는 2단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 3단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```diff\n+ 가격 : 100만 코인\n+ 뽑기 시 0 ~ 1억 코인 또는 3단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 4단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```diff\n+ 가격 : 1000만 코인\n+ 뽑기 시 0 ~ 10억 코인 또는 4단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 5단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```diff\n+ 가격 : 1억 코인\n+ 뽑기 시 0 ~ 100억 코인 또는 5단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 6단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```diff\n+ 가격 : 10억 코인\n+ 뽑기 시 0 ~ 1000억 코인 또는 6단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 7단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```diff\n+ 가격 : 100억 코인\n+ 뽑기 시 0 ~ 1조 코인 또는 7단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 8단계 ---```',
+        inline='False'
+      )
+
+      embed.set_footer(text = '뽑기 관련 명령어 : `$뽑기`')
+
+      await ctx.send(embed = embed)
+
+    elif order == '나' or order == 'ㄴ' or order == 's' or order == 'my' or order == 'me':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+    
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+
+    else:
+      await ctx.send('잘못된 명령어입니다.')
+
+  elif len(text) == 3:
+    order = text[0]
+    step = text[1]
+    amount = text[2]
+
+    if order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == 'buy':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if int(amount)*replace_box(step) > user_money:
+          await ctx.send('보유 금액이 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
+          ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %d개`\n`- %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 구매 5 10`')
+    
+    elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == 'sell':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before-int(amount))
+          ref.child(str(user_id)).child('money').set(user_money+(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 판매했어요.\n`- %s 상자 : %d개`\n`+ %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 판매 5 10`')
+
+    elif order == '오픈' or order == 'ㅇㅍ' or order == 'dv' or order == 'open':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          if int(amount) > 10000:
+            await ctx.send('한 번에 1만 개를 초과하여 상자를 열 수 없습니다.')
+          else:
+            result = gacha(int(step), int(amount))
+            keys = list(result.keys())
+            values = list(result.values())
+            
+            if int(step) == 1:
+              emoji = ':coin:'
+            elif int(step) == 2:
+              emoji = ':dollar:'
+            elif int(step) == 3:
+              emoji = ':yen:'
+            elif int(step) == 4:
+              emoji = ':euro:'
+            elif int(step) == 5:
+              emoji = ':pound:'
+            elif int(step) == 6:
+              emoji = ':moneybag:'
+            elif int(step) == 7:
+              emoji = ':gem:'
+            elif int(step) == 8:
+              emoji = ':credit_card:'
+
+            embed = discord.Embed(
+              title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+              color = 0xE8CBC0
+            )
+
+            re_money = 0
+            re_box = 0
+
+            if int(step) == 1:
+              for i in range(0,11):
+                slid = keys[i].split(' ')
+                re_money += (int(slid[0]) * int(values[i]))
+                slid[0] = replace_amount(int(slid[0]))
+
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              
+              embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+              
+
+            else:
+              for i in range(0,12):
+                slid = keys[i].split(' ')
+                if i >= 0 and i <= 7:
+                  re_money += (int(slid[0]) * int(values[i]))
+                else:
+                  re_box += (int(slid[0]) * int(values[i]))
+
+                slid[0] = replace_amount(int(slid[0]))
+                
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+              before = user_boxes[int(step)-1]
+              ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+            
+            await ctx.send(embed = embed)
+
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`')
+
+@client.command(name='Qr')
+async def draw(ctx, *text):
+  if len(text) == 0:
+    await ctx.send('`$뽑기 상점` : 뽑기 상자 목록과 가격을 확인합니다.\n`$뽑기 나` : 본인의 상자 보유 여부를 확인합니다.\n`$뽑기 구매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 구매합니다.\n`$뽑기 판매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 판매합니다.\n`$뽑기 오픈 (단계) (수량)` : (수량)만큼 상자를 오픈합니다.')
+  elif len(text) == 1:
+    ref = db.reference()
+    dic = ref.get()
+    del dic['pg']
+    del dic['sn']
+    del dic['mk']
+    del dic['ua']
+    del dic['nl']
+    del dic['pd']
+    del dic['go']
+    del dic['tc']
+    del dic['sl']
+    del dic['ce']
+    del dic['admin']
+
+    user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
+
+    order = text[0]
+
+    if order == '상점' or order == 'tw' or order == 'ㅅㅈ' or order == 'store' or order == 'shop':
+      embed = discord.Embed(
+        title = ':shopping_cart: 뽑기 상점',
+        color = 0x009FFF
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```diff\n+ 가격 : 1,000 코인\n+ 뽑기 시 0 ~ 10만 코인이 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 1단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```diff\n+ 가격 : 1만 코인\n+ 뽑기 시 0 ~ 100만 코인 또는 1단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 2단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```diff\n+ 가격 : 10만 코인\n+ 뽑기 시 0 ~ 1000만 코인 또는 2단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 3단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```diff\n+ 가격 : 100만 코인\n+ 뽑기 시 0 ~ 1억 코인 또는 3단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 4단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```diff\n+ 가격 : 1000만 코인\n+ 뽑기 시 0 ~ 10억 코인 또는 4단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 5단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```diff\n+ 가격 : 1억 코인\n+ 뽑기 시 0 ~ 100억 코인 또는 5단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 6단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```diff\n+ 가격 : 10억 코인\n+ 뽑기 시 0 ~ 1000억 코인 또는 6단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 7단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```diff\n+ 가격 : 100억 코인\n+ 뽑기 시 0 ~ 1조 코인 또는 7단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 8단계 ---```',
+        inline='False'
+      )
+
+      embed.set_footer(text = '뽑기 관련 명령어 : `$뽑기`')
+
+      await ctx.send(embed = embed)
+
+    elif order == '나' or order == 'ㄴ' or order == 's' or order == 'my' or order == 'me':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+    
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+
+    else:
+      await ctx.send('잘못된 명령어입니다.')
+
+  elif len(text) == 3:
+    order = text[0]
+    step = text[1]
+    amount = text[2]
+
+    if order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == 'buy':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if int(amount)*replace_box(step) > user_money:
+          await ctx.send('보유 금액이 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
+          ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %d개`\n`- %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 구매 5 10`')
+    
+    elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == 'sell':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before-int(amount))
+          ref.child(str(user_id)).child('money').set(user_money+(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 판매했어요.\n`- %s 상자 : %d개`\n`+ %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 판매 5 10`')
+
+    elif order == '오픈' or order == 'ㅇㅍ' or order == 'dv' or order == 'open':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          if int(amount) > 10000:
+            await ctx.send('한 번에 1만 개를 초과하여 상자를 열 수 없습니다.')
+          else:
+            result = gacha(int(step), int(amount))
+            keys = list(result.keys())
+            values = list(result.values())
+            
+            if int(step) == 1:
+              emoji = ':coin:'
+            elif int(step) == 2:
+              emoji = ':dollar:'
+            elif int(step) == 3:
+              emoji = ':yen:'
+            elif int(step) == 4:
+              emoji = ':euro:'
+            elif int(step) == 5:
+              emoji = ':pound:'
+            elif int(step) == 6:
+              emoji = ':moneybag:'
+            elif int(step) == 7:
+              emoji = ':gem:'
+            elif int(step) == 8:
+              emoji = ':credit_card:'
+
+            embed = discord.Embed(
+              title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+              color = 0xE8CBC0
+            )
+
+            re_money = 0
+            re_box = 0
+
+            if int(step) == 1:
+              for i in range(0,11):
+                slid = keys[i].split(' ')
+                re_money += (int(slid[0]) * int(values[i]))
+                slid[0] = replace_amount(int(slid[0]))
+
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              
+              embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+              
+
+            else:
+              for i in range(0,12):
+                slid = keys[i].split(' ')
+                if i >= 0 and i <= 7:
+                  re_money += (int(slid[0]) * int(values[i]))
+                else:
+                  re_box += (int(slid[0]) * int(values[i]))
+
+                slid[0] = replace_amount(int(slid[0]))
+                
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+              before = user_boxes[int(step)-1]
+              ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+            
+            await ctx.send(embed = embed)
+
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`')
+
+@client.command(name='ㅃㄱ')
+async def draw(ctx, *text):
+  if len(text) == 0:
+    await ctx.send('`$뽑기 상점` : 뽑기 상자 목록과 가격을 확인합니다.\n`$뽑기 나` : 본인의 상자 보유 여부를 확인합니다.\n`$뽑기 구매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 구매합니다.\n`$뽑기 판매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 판매합니다.\n`$뽑기 오픈 (단계) (수량)` : (수량)만큼 상자를 오픈합니다.')
+  elif len(text) == 1:
+    ref = db.reference()
+    dic = ref.get()
+    del dic['pg']
+    del dic['sn']
+    del dic['mk']
+    del dic['ua']
+    del dic['nl']
+    del dic['pd']
+    del dic['go']
+    del dic['tc']
+    del dic['sl']
+    del dic['ce']
+    del dic['admin']
+
+    user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
+
+    order = text[0]
+
+    if order == '상점' or order == 'tw' or order == 'ㅅㅈ' or order == 'store' or order == 'shop':
+      embed = discord.Embed(
+        title = ':shopping_cart: 뽑기 상점',
+        color = 0x009FFF
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```diff\n+ 가격 : 1,000 코인\n+ 뽑기 시 0 ~ 10만 코인이 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 1단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```diff\n+ 가격 : 1만 코인\n+ 뽑기 시 0 ~ 100만 코인 또는 1단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 2단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```diff\n+ 가격 : 10만 코인\n+ 뽑기 시 0 ~ 1000만 코인 또는 2단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 3단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```diff\n+ 가격 : 100만 코인\n+ 뽑기 시 0 ~ 1억 코인 또는 3단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 4단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```diff\n+ 가격 : 1000만 코인\n+ 뽑기 시 0 ~ 10억 코인 또는 4단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 5단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```diff\n+ 가격 : 1억 코인\n+ 뽑기 시 0 ~ 100억 코인 또는 5단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 6단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```diff\n+ 가격 : 10억 코인\n+ 뽑기 시 0 ~ 1000억 코인 또는 6단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 7단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```diff\n+ 가격 : 100억 코인\n+ 뽑기 시 0 ~ 1조 코인 또는 7단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 8단계 ---```',
+        inline='False'
+      )
+
+      embed.set_footer(text = '뽑기 관련 명령어 : `$뽑기`')
+
+      await ctx.send(embed = embed)
+
+    elif order == '나' or order == 'ㄴ' or order == 's' or order == 'my' or order == 'me':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+    
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+
+    else:
+      await ctx.send('잘못된 명령어입니다.')
+
+  elif len(text) == 3:
+    order = text[0]
+    step = text[1]
+    amount = text[2]
+
+    if order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == 'buy':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if int(amount)*replace_box(step) > user_money:
+          await ctx.send('보유 금액이 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
+          ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %d개`\n`- %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 구매 5 10`')
+    
+    elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == 'sell':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before-int(amount))
+          ref.child(str(user_id)).child('money').set(user_money+(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 판매했어요.\n`- %s 상자 : %d개`\n`+ %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 판매 5 10`')
+
+    elif order == '오픈' or order == 'ㅇㅍ' or order == 'dv' or order == 'open':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          if int(amount) > 10000:
+            await ctx.send('한 번에 1만 개를 초과하여 상자를 열 수 없습니다.')
+          else:
+            result = gacha(int(step), int(amount))
+            keys = list(result.keys())
+            values = list(result.values())
+            
+            if int(step) == 1:
+              emoji = ':coin:'
+            elif int(step) == 2:
+              emoji = ':dollar:'
+            elif int(step) == 3:
+              emoji = ':yen:'
+            elif int(step) == 4:
+              emoji = ':euro:'
+            elif int(step) == 5:
+              emoji = ':pound:'
+            elif int(step) == 6:
+              emoji = ':moneybag:'
+            elif int(step) == 7:
+              emoji = ':gem:'
+            elif int(step) == 8:
+              emoji = ':credit_card:'
+
+            embed = discord.Embed(
+              title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+              color = 0xE8CBC0
+            )
+
+            re_money = 0
+            re_box = 0
+
+            if int(step) == 1:
+              for i in range(0,11):
+                slid = keys[i].split(' ')
+                re_money += (int(slid[0]) * int(values[i]))
+                slid[0] = replace_amount(int(slid[0]))
+
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              
+              embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+              
+
+            else:
+              for i in range(0,12):
+                slid = keys[i].split(' ')
+                if i >= 0 and i <= 7:
+                  re_money += (int(slid[0]) * int(values[i]))
+                else:
+                  re_box += (int(slid[0]) * int(values[i]))
+
+                slid[0] = replace_amount(int(slid[0]))
+                
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+              before = user_boxes[int(step)-1]
+              ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+            
+            await ctx.send(embed = embed)
+
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`')
+
+@client.command(name='ㅂㄱ')
+async def draw(ctx, *text):
+  if len(text) == 0:
+    await ctx.send('`$뽑기 상점` : 뽑기 상자 목록과 가격을 확인합니다.\n`$뽑기 나` : 본인의 상자 보유 여부를 확인합니다.\n`$뽑기 구매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 구매합니다.\n`$뽑기 판매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 판매합니다.\n`$뽑기 오픈 (단계) (수량)` : (수량)만큼 상자를 오픈합니다.')
+  elif len(text) == 1:
+    ref = db.reference()
+    dic = ref.get()
+    del dic['pg']
+    del dic['sn']
+    del dic['mk']
+    del dic['ua']
+    del dic['nl']
+    del dic['pd']
+    del dic['go']
+    del dic['tc']
+    del dic['sl']
+    del dic['ce']
+    del dic['admin']
+
+    user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
+
+    order = text[0]
+
+    if order == '상점' or order == 'tw' or order == 'ㅅㅈ' or order == 'store' or order == 'shop':
+      embed = discord.Embed(
+        title = ':shopping_cart: 뽑기 상점',
+        color = 0x009FFF
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```diff\n+ 가격 : 1,000 코인\n+ 뽑기 시 0 ~ 10만 코인이 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 1단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```diff\n+ 가격 : 1만 코인\n+ 뽑기 시 0 ~ 100만 코인 또는 1단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 2단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```diff\n+ 가격 : 10만 코인\n+ 뽑기 시 0 ~ 1000만 코인 또는 2단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 3단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```diff\n+ 가격 : 100만 코인\n+ 뽑기 시 0 ~ 1억 코인 또는 3단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 4단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```diff\n+ 가격 : 1000만 코인\n+ 뽑기 시 0 ~ 10억 코인 또는 4단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 5단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```diff\n+ 가격 : 1억 코인\n+ 뽑기 시 0 ~ 100억 코인 또는 5단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 6단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```diff\n+ 가격 : 10억 코인\n+ 뽑기 시 0 ~ 1000억 코인 또는 6단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 7단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```diff\n+ 가격 : 100억 코인\n+ 뽑기 시 0 ~ 1조 코인 또는 7단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 8단계 ---```',
+        inline='False'
+      )
+
+      embed.set_footer(text = '뽑기 관련 명령어 : `$뽑기`')
+
+      await ctx.send(embed = embed)
+
+    elif order == '나' or order == 'ㄴ' or order == 's' or order == 'my' or order == 'me':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+    
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+
+    else:
+      await ctx.send('잘못된 명령어입니다.')
+
+  elif len(text) == 3:
+    order = text[0]
+    step = text[1]
+    amount = text[2]
+
+    if order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == 'buy':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if int(amount)*replace_box(step) > user_money:
+          await ctx.send('보유 금액이 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
+          ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %d개`\n`- %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 구매 5 10`')
+    
+    elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == 'sell':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before-int(amount))
+          ref.child(str(user_id)).child('money').set(user_money+(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 판매했어요.\n`- %s 상자 : %d개`\n`+ %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 판매 5 10`')
+
+    elif order == '오픈' or order == 'ㅇㅍ' or order == 'dv' or order == 'open':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          if int(amount) > 10000:
+            await ctx.send('한 번에 1만 개를 초과하여 상자를 열 수 없습니다.')
+          else:
+            result = gacha(int(step), int(amount))
+            keys = list(result.keys())
+            values = list(result.values())
+            
+            if int(step) == 1:
+              emoji = ':coin:'
+            elif int(step) == 2:
+              emoji = ':dollar:'
+            elif int(step) == 3:
+              emoji = ':yen:'
+            elif int(step) == 4:
+              emoji = ':euro:'
+            elif int(step) == 5:
+              emoji = ':pound:'
+            elif int(step) == 6:
+              emoji = ':moneybag:'
+            elif int(step) == 7:
+              emoji = ':gem:'
+            elif int(step) == 8:
+              emoji = ':credit_card:'
+
+            embed = discord.Embed(
+              title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+              color = 0xE8CBC0
+            )
+
+            re_money = 0
+            re_box = 0
+
+            if int(step) == 1:
+              for i in range(0,11):
+                slid = keys[i].split(' ')
+                re_money += (int(slid[0]) * int(values[i]))
+                slid[0] = replace_amount(int(slid[0]))
+
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              
+              embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+              
+
+            else:
+              for i in range(0,12):
+                slid = keys[i].split(' ')
+                if i >= 0 and i <= 7:
+                  re_money += (int(slid[0]) * int(values[i]))
+                else:
+                  re_box += (int(slid[0]) * int(values[i]))
+
+                slid[0] = replace_amount(int(slid[0]))
+                
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+              before = user_boxes[int(step)-1]
+              ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+            
+            await ctx.send(embed = embed)
+
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`')
+
+@client.command(name='qr')
+async def draw(ctx, *text):
+  if len(text) == 0:
+    await ctx.send('`$뽑기 상점` : 뽑기 상자 목록과 가격을 확인합니다.\n`$뽑기 나` : 본인의 상자 보유 여부를 확인합니다.\n`$뽑기 구매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 구매합니다.\n`$뽑기 판매 (단계) (수량)` : 뽑기 상자를 (수량)만큼 판매합니다.\n`$뽑기 오픈 (단계) (수량)` : (수량)만큼 상자를 오픈합니다.')
+  elif len(text) == 1:
+    ref = db.reference()
+    dic = ref.get()
+    del dic['pg']
+    del dic['sn']
+    del dic['mk']
+    del dic['ua']
+    del dic['nl']
+    del dic['pd']
+    del dic['go']
+    del dic['tc']
+    del dic['sl']
+    del dic['ce']
+    del dic['admin']
+
+    user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
+
+    order = text[0]
+
+    if order == '상점' or order == 'tw' or order == 'ㅅㅈ' or order == 'store' or order == 'shop':
+      embed = discord.Embed(
+        title = ':shopping_cart: 뽑기 상점',
+        color = 0x009FFF
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```diff\n+ 가격 : 1,000 코인\n+ 뽑기 시 0 ~ 10만 코인이 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 1단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```diff\n+ 가격 : 1만 코인\n+ 뽑기 시 0 ~ 100만 코인 또는 1단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 2단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```diff\n+ 가격 : 10만 코인\n+ 뽑기 시 0 ~ 1000만 코인 또는 2단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 3단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```diff\n+ 가격 : 100만 코인\n+ 뽑기 시 0 ~ 1억 코인 또는 3단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 4단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```diff\n+ 가격 : 1000만 코인\n+ 뽑기 시 0 ~ 10억 코인 또는 4단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 5단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```diff\n+ 가격 : 1억 코인\n+ 뽑기 시 0 ~ 100억 코인 또는 5단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 6단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```diff\n+ 가격 : 10억 코인\n+ 뽑기 시 0 ~ 1000억 코인 또는 6단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 7단계 ---```',
+        inline='False'
+      )
+
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```diff\n+ 가격 : 100억 코인\n+ 뽑기 시 0 ~ 1조 코인 또는 7단계 상자 5 ~ 50 개가 확률적으로 나옵니다.\n--- 확률 : $뽑기 확률 8단계 ---```',
+        inline='False'
+      )
+
+      embed.set_footer(text = '뽑기 관련 명령어 : `$뽑기`')
+
+      await ctx.send(embed = embed)
+
+    elif order == '나' or order == 'ㄴ' or order == 's' or order == 'my' or order == 'me':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+    
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      embed = discord.Embed(
+        title = '%s님의 보유 상자' %(user_nickname),
+        color = 0xef8e38
+      )
+
+      embed.add_field(
+        name = ':coin: 1단계 상자 :coin:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[1]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':dollar: 2단계 상자 :dollar:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[2]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':yen: 3단계 상자 :yen:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[3]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':euro: 4단계 상자 :euro:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[4]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':pound: 5단계 상자 :pound:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[5]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':moneybag: 6단계 상자 :moneybag:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[6]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':gem: 7단계 상자 :gem:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[7]),
+        inline = True
+      )
+      embed.add_field(
+        name = ':credit_card: 8단계 상자 :credit_card:',
+        value = '```md\n# %s 개```' %replace_amount(user_boxes[8]),
+        inline = True
+      )
+
+      await ctx.send(embed = embed)
+
+    else:
+      await ctx.send('잘못된 명령어입니다.')
+
+  elif len(text) == 3:
+    order = text[0]
+    step = text[1]
+    amount = text[2]
+
+    if order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == 'buy':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if int(amount)*replace_box(step) > user_money:
+          await ctx.send('보유 금액이 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
+          ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %d개`\n`- %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 구매 5 10`')
+    
+    elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == 'sell':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          ref.child(str(user_id)).child('box').child(step).set(before-int(amount))
+          ref.child(str(user_id)).child('money').set(user_money+(int(amount)*replace_box(step)))
+
+          await ctx.send('상자를 판매했어요.\n`- %s 상자 : %d개`\n`+ %s 코인`'%((step+'단계'),int(amount),replace_amount(int(amount)*replace_box(step))))
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 판매 5 10`')
+
+    elif order == '오픈' or order == 'ㅇㅍ' or order == 'dv' or order == 'open':
+      user_id = ctx.author.id
+      ref = db.reference()
+      dic = ref.get()
+      data = dic[str(user_id)]
+      user_money = data['money']
+      user_boxes = data['box']
+      user_nickname = data['nickname']
+
+      try:
+        before = user_boxes[int(step)]
+
+        if before < int(amount):
+          await ctx.send('보유 상자 개수가 부족합니다.')
+        else:
+          if int(amount) > 10000:
+            await ctx.send('한 번에 1만 개를 초과하여 상자를 열 수 없습니다.')
+          else:
+            result = gacha(int(step), int(amount))
+            keys = list(result.keys())
+            values = list(result.values())
+            
+            if int(step) == 1:
+              emoji = ':coin:'
+            elif int(step) == 2:
+              emoji = ':dollar:'
+            elif int(step) == 3:
+              emoji = ':yen:'
+            elif int(step) == 4:
+              emoji = ':euro:'
+            elif int(step) == 5:
+              emoji = ':pound:'
+            elif int(step) == 6:
+              emoji = ':moneybag:'
+            elif int(step) == 7:
+              emoji = ':gem:'
+            elif int(step) == 8:
+              emoji = ':credit_card:'
+
+            embed = discord.Embed(
+              title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+              color = 0xE8CBC0
+            )
+
+            re_money = 0
+            re_box = 0
+
+            if int(step) == 1:
+              for i in range(0,11):
+                slid = keys[i].split(' ')
+                re_money += (int(slid[0]) * int(values[i]))
+                slid[0] = replace_amount(int(slid[0]))
+
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              
+              embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+              
+
+            else:
+              for i in range(0,12):
+                slid = keys[i].split(' ')
+                if i >= 0 and i <= 7:
+                  re_money += (int(slid[0]) * int(values[i]))
+                else:
+                  re_box += (int(slid[0]) * int(values[i]))
+
+                slid[0] = replace_amount(int(slid[0]))
+                
+                embed.add_field(
+                  name = '**%s**' %(slid[0]+' '+slid[1]),
+                  value = '```md\n[%d][번]```'%values[i],
+                  inline = True
+                )
+              embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+              ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+              ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+              before = user_boxes[int(step)-1]
+              ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+            
+            await ctx.send(embed = embed)
+
+      except:
+        await ctx.send('잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`')
+
+
+##############################################################################################################################
+
 @client.command(name='순위')
 async def rank(ctx, *text):
   if len(text) == 0:
@@ -1918,6 +3624,9 @@ async def rank(ctx, *text):
 
     moneys = {}
     user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
 
     for i in user_ids:
       money = dic[str(i)]['money']
@@ -1931,6 +3640,29 @@ async def rank(ctx, *text):
     moneys.reverse()
 
     if text[0] == '자신' or text[0] == '나' or text[0] == 'ㄴ' or text[0] == 'me' or text[0] == 'ㅈㅅ' or text[0] == 'wt':
+      user_money = rank[str(user_id)]
+      user_nickname = dic[str(user_id)]['nickname']
+
+      embed = discord.Embed(
+        title = '%s 님의 순위'%user_nickname,
+        color = 0xf64f59
+      )
+
+      user_rank = moneys.index(user_money) + 1
+      percent = (user_rank / len(moneys)) * 100
+
+      embed.add_field(
+        name=":trophy: **전체 순위**", value="**{}/{}** (상위 {}%)" .format(user_rank, len(moneys), percent), inline=True
+        )
+
+      embed.add_field(
+        name=':dollar: **현재 보유 금액**', value='%s' %replace_amount(user_money), inline=False
+      )
+
+      await ctx.send(embed=embed)
+
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
       user_money = rank[str(user_id)]
       user_nickname = dic[str(user_id)]['nickname']
 
@@ -2120,6 +3852,9 @@ async def rank(ctx, *text):
 
     moneys = {}
     user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
 
     for i in user_ids:
       money = dic[str(i)]['money']
@@ -2133,6 +3868,29 @@ async def rank(ctx, *text):
     moneys.reverse()
 
     if text[0] == '자신' or text[0] == '나' or text[0] == 'ㄴ' or text[0] == 'me' or text[0] == 'ㅈㅅ' or text[0] == 'wt':
+      user_money = rank[str(user_id)]
+      user_nickname = dic[str(user_id)]['nickname']
+
+      embed = discord.Embed(
+        title = '%s 님의 순위'%user_nickname,
+        color = 0xf64f59
+      )
+
+      user_rank = moneys.index(user_money) + 1
+      percent = (user_rank / len(moneys)) * 100
+
+      embed.add_field(
+        name=":trophy: **전체 순위**", value="**{}/{}** (상위 {}%)" .format(user_rank, len(moneys), percent), inline=True
+        )
+
+      embed.add_field(
+        name=':dollar: **현재 보유 금액**', value='%s' %replace_amount(user_money), inline=False
+      )
+
+      await ctx.send(embed=embed)
+
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
       user_money = rank[str(user_id)]
       user_nickname = dic[str(user_id)]['nickname']
 
@@ -2299,7 +4057,7 @@ async def rank(ctx, *text):
 
     except:
       await ctx.send('페이지는 자연수만 입력할 수 있습니다.')
-  
+
 @client.command(name='td')
 async def rank(ctx, *text):
   if len(text) == 0:
@@ -2322,6 +4080,9 @@ async def rank(ctx, *text):
 
     moneys = {}
     user_ids = list(dic.keys())
+    user_nicks = []
+    for i in user_ids:
+      user_nicks.append(dic[str(i)]['nickname'])
 
     for i in user_ids:
       money = dic[str(i)]['money']
@@ -2335,6 +4096,29 @@ async def rank(ctx, *text):
     moneys.reverse()
 
     if text[0] == '자신' or text[0] == '나' or text[0] == 'ㄴ' or text[0] == 'me' or text[0] == 'ㅈㅅ' or text[0] == 'wt':
+      user_money = rank[str(user_id)]
+      user_nickname = dic[str(user_id)]['nickname']
+
+      embed = discord.Embed(
+        title = '%s 님의 순위'%user_nickname,
+        color = 0xf64f59
+      )
+
+      user_rank = moneys.index(user_money) + 1
+      percent = (user_rank / len(moneys)) * 100
+
+      embed.add_field(
+        name=":trophy: **전체 순위**", value="**{}/{}** (상위 {}%)" .format(user_rank, len(moneys), percent), inline=True
+        )
+
+      embed.add_field(
+        name=':dollar: **현재 보유 금액**', value='%s' %replace_amount(user_money), inline=False
+      )
+
+      await ctx.send(embed=embed)
+
+    elif text[0] in user_nicks:
+      user_id = user_ids[user_nicks.index(text[0])]
       user_money = rank[str(user_id)]
       user_nickname = dic[str(user_id)]['nickname']
 
@@ -2501,6 +4285,7 @@ async def rank(ctx, *text):
 
     except:
       await ctx.send('페이지는 자연수만 입력할 수 있습니다.')
+
 
 ##############################################################################################################################
 
