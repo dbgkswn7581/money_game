@@ -496,11 +496,7 @@ def get_value(dic):
         now_value = dic[i]['value']
         value_gap = now_value - before_value
 
-        if now_value >= 1000:
-          now_value = str(now_value)
-          now_value = now_value[0:1] + ',' + now_value[1:]
-        else:
-          now_value = str(now_value)
+        now_value = format(now_value, ',d')
 
         if value_gap > 0 :
           re = {'value' : now_value, 'pm' : '+', 'gap' : '▲'+str(value_gap)}
