@@ -547,7 +547,7 @@ def find_company(input):
     return 'ua'
   elif input == '냐룽제과' or input == '냐룽' or input == 'sf' or input == 'sfwr' or input == 'ㄴㄹ' or input == 'ㄴㄹㅈㄱ':
     return 'nl'
-  elif input == '판다은행' or input == '판다' or input == 've' or input == 'vedg' or input == 'ㅍㄷ' or input == 'ㅍㄷㅇㅇ':
+  elif input == '판다은행' or input == '판다' or input == 've' or input == 'vedg' or input == 'ㅍㄷ' or input == 'ㅍㄷㅇㅎ':
     return 'pd'
   elif input == '가온그룹' or input == '가온' or input == 'rd' or input == 'rdrf' or input == 'ㄱㅇ' or input == 'ㄱㅇㄱㄹ':
     return 'go'
