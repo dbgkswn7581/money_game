@@ -2220,11 +2220,12 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %s개`\n`- %s 코인`'%((step+'단계'),replace_amount(int(amount)),replace_amount(int(amount)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if int(amount)*replace_box(step) > user_money:
             await ctx.send('보유 금액이 부족합니다.')
+
           else:
             ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
             ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
@@ -2262,7 +2263,7 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 판매했어요.\n`- %s 상자 : %s개`\n`+ %s 코인`'%((step+'단계'),replace_amount(int(before/2)+1),replace_amount(int(before/2)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if before < int(amount):
@@ -2668,11 +2669,12 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %s개`\n`- %s 코인`'%((step+'단계'),replace_amount(int(amount)),replace_amount(int(amount)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if int(amount)*replace_box(step) > user_money:
             await ctx.send('보유 금액이 부족합니다.')
+
           else:
             ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
             ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
@@ -2710,7 +2712,7 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 판매했어요.\n`- %s 상자 : %s개`\n`+ %s 코인`'%((step+'단계'),replace_amount(int(before/2)+1),replace_amount(int(before/2)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if before < int(amount):
@@ -3116,11 +3118,12 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %s개`\n`- %s 코인`'%((step+'단계'),replace_amount(int(amount)),replace_amount(int(amount)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if int(amount)*replace_box(step) > user_money:
             await ctx.send('보유 금액이 부족합니다.')
+
           else:
             ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
             ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
@@ -3158,7 +3161,7 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 판매했어요.\n`- %s 상자 : %s개`\n`+ %s 코인`'%((step+'단계'),replace_amount(int(before/2)+1),replace_amount(int(before/2)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if before < int(amount):
@@ -3564,11 +3567,12 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %s개`\n`- %s 코인`'%((step+'단계'),replace_amount(int(amount)),replace_amount(int(amount)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if int(amount)*replace_box(step) > user_money:
             await ctx.send('보유 금액이 부족합니다.')
+
           else:
             ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
             ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
@@ -3606,7 +3610,7 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 판매했어요.\n`- %s 상자 : %s개`\n`+ %s 코인`'%((step+'단계'),replace_amount(int(before/2)+1),replace_amount(int(before/2)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if before < int(amount):
@@ -4012,11 +4016,12 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 구매했어요.\n`+ %s 상자 : %s개`\n`- %s 코인`'%((step+'단계'),replace_amount(int(amount)),replace_amount(int(amount)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if int(amount)*replace_box(step) > user_money:
             await ctx.send('보유 금액이 부족합니다.')
+
           else:
             ref.child(str(user_id)).child('box').child(step).set(before+int(amount))
             ref.child(str(user_id)).child('money').set(user_money-(int(amount)*replace_box(step)))
@@ -4054,7 +4059,7 @@ async def draw(ctx, *text):
 
             await ctx.send('상자를 판매했어요.\n`- %s 상자 : %s개`\n`+ %s 코인`'%((step+'단계'),replace_amount(int(before/2)+1),replace_amount(int(before/2)*replace_box(step))))
 
-        elif type(amount) == int:
+        else:
           before = user_boxes[int(step)]
 
           if before < int(amount):
