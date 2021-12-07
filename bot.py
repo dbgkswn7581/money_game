@@ -608,7 +608,6 @@ def find_plus_or_minus(before, now, amount):
       return '+0' 
     elif now - before < 0:
       return '-%s' %replace_amount((before-now)*amount)
-
 @client.command(name="주식")
 async def reg(ctx, *text):
   user_keys = []
@@ -642,6 +641,10 @@ async def reg(ctx, *text):
     now_time = now_time['clock']
     
     if time_gap['type'] == 'min':
+      if time_gap['gap'] < 0:
+        time_gap['gap'] = time_gap['gap'] * (-1)
+        time_gap['gap'] = 60 - time_gap['gap']
+
       await ctx.send('주식 정보는 %d분 전 변동됐어요. `%s`\n```diff\n+++ <회사명>  <현재 가치>  <변동량>\n\n%s   펭귄증권     %s    (%s)\n%s   시네제약     %s    (%s)\n%s   마코분식     %s    (%s)\n%s   윤아마켓     %s    (%s)\n%s   냐룽제과     %s    (%s)\n%s   판다은행     %s    (%s)\n%s   가온그룹     %s    (%s)\n%s   티칩화학     %s    (%s)\n%s   시루전자     %s    (%s)\n%s   코어건설     %s    (%s)```\n다음 변동: `%d분 후`'
       %(time_gap['gap'], now_time, pg['pm'], pg['value'], pg['gap'], sn['pm'], sn['value'], sn['gap'], mk['pm'], mk['value'], mk['gap'], ua['pm'], ua['value'], ua['gap'], nl['pm'], nl['value'], nl['gap'], pd['pm'], pd['value'], pd['gap'], go['pm'], go['value'], go['gap'], tc['pm'], tc['value'], tc['gap'], sl['pm'], sl['value'], sl['gap'], ce['pm'], ce['value'], ce['gap'], 4-time_gap['gap']))
 
@@ -1009,6 +1012,10 @@ async def reg(ctx, *text):
     now_time = now_time['clock']
     
     if time_gap['type'] == 'min':
+      if time_gap['gap'] < 0:
+        time_gap['gap'] = time_gap['gap'] * (-1)
+        time_gap['gap'] = 60 - time_gap['gap']
+        
       await ctx.send('주식 정보는 %d분 전 변동됐어요. `%s`\n```diff\n+++ <회사명>  <현재 가치>  <변동량>\n\n%s   펭귄증권     %s    (%s)\n%s   시네제약     %s    (%s)\n%s   마코분식     %s    (%s)\n%s   윤아마켓     %s    (%s)\n%s   냐룽제과     %s    (%s)\n%s   판다은행     %s    (%s)\n%s   가온그룹     %s    (%s)\n%s   티칩화학     %s    (%s)\n%s   시루전자     %s    (%s)\n%s   코어건설     %s    (%s)```\n다음 변동: `%d분 후`'
       %(time_gap['gap'], now_time, pg['pm'], pg['value'], pg['gap'], sn['pm'], sn['value'], sn['gap'], mk['pm'], mk['value'], mk['gap'], ua['pm'], ua['value'], ua['gap'], nl['pm'], nl['value'], nl['gap'], pd['pm'], pd['value'], pd['gap'], go['pm'], go['value'], go['gap'], tc['pm'], tc['value'], tc['gap'], sl['pm'], sl['value'], sl['gap'], ce['pm'], ce['value'], ce['gap'], 4-time_gap['gap']))
 
@@ -1375,6 +1382,10 @@ async def reg(ctx, *text):
     now_time = now_time['clock']
     
     if time_gap['type'] == 'min':
+      if time_gap['gap'] < 0:
+        time_gap['gap'] = time_gap['gap'] * (-1)
+        time_gap['gap'] = 60 - time_gap['gap']
+        
       await ctx.send('주식 정보는 %d분 전 변동됐어요. `%s`\n```diff\n+++ <회사명>  <현재 가치>  <변동량>\n\n%s   펭귄증권     %s    (%s)\n%s   시네제약     %s    (%s)\n%s   마코분식     %s    (%s)\n%s   윤아마켓     %s    (%s)\n%s   냐룽제과     %s    (%s)\n%s   판다은행     %s    (%s)\n%s   가온그룹     %s    (%s)\n%s   티칩화학     %s    (%s)\n%s   시루전자     %s    (%s)\n%s   코어건설     %s    (%s)```\n다음 변동: `%d분 후`'
       %(time_gap['gap'], now_time, pg['pm'], pg['value'], pg['gap'], sn['pm'], sn['value'], sn['gap'], mk['pm'], mk['value'], mk['gap'], ua['pm'], ua['value'], ua['gap'], nl['pm'], nl['value'], nl['gap'], pd['pm'], pd['value'], pd['gap'], go['pm'], go['value'], go['gap'], tc['pm'], tc['value'], tc['gap'], sl['pm'], sl['value'], sl['gap'], ce['pm'], ce['value'], ce['gap'], 4-time_gap['gap']))
 
