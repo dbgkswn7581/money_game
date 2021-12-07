@@ -20,7 +20,6 @@ async def on_ready():
     game = discord.Game("Money Game")
     await client.change_presence(status = discord.Status.online, activity = game)
 
-
 @client.command(name="가입")
 async def signup(ctx, *text):
   user_keys = []
@@ -80,11 +79,11 @@ async def signup(ctx, *text):
       )
       embed.add_field(name = '중복된 닉네임입니다.', value='다른 닉네임으로 다시 시도해주십시오.', inline=False)
     else:
-      embed = discord.Embed(title = "회원가입 성공",
+      embed = discord.Embed(title = "%s님 반갑습니다!" %txt,
       description = "Money Game", color = discord.Color.green()
       )
-      embed.add_field(name="%s님 반갑습니다!" %txt, value='Welcome', inline=True)
       embed.add_field(name='보유 자금', value='5000', inline=True)
+      embed.add_field(name="`$도움말`을 통해 사용 가능한 명령어를 확인해보세요" , value='접두사 : `$`', inline=True)
       # embed.set_thumbnail(url="https://cravatar.eu/helmhead/%s/68.png" %txt)
 
       ref = db.reference()
@@ -164,11 +163,11 @@ async def signup(ctx, *text):
       )
       embed.add_field(name = '중복된 닉네임입니다.', value='다른 닉네임으로 다시 시도해주십시오.', inline=False)
     else:
-      embed = discord.Embed(title = "회원가입 성공",
+      embed = discord.Embed(title = "%s님 반갑습니다!" %txt,
       description = "Money Game", color = discord.Color.green()
       )
-      embed.add_field(name="%s님 반갑습니다!" %txt, value='Welcome', inline=True)
       embed.add_field(name='보유 자금', value='5000', inline=True)
+      embed.add_field(name="`$도움말`을 통해 사용 가능한 명령어를 확인해보세요" , value='접두사 : `$`', inline=True)
       # embed.set_thumbnail(url="https://cravatar.eu/helmhead/%s/68.png" %txt)
 
       ref = db.reference()
@@ -248,11 +247,11 @@ async def signup(ctx, *text):
       )
       embed.add_field(name = '중복된 닉네임입니다.', value='다른 닉네임으로 다시 시도해주십시오.', inline=False)
     else:
-      embed = discord.Embed(title = "회원가입 성공",
+      embed = discord.Embed(title = "%s님 반갑습니다!" %txt,
       description = "Money Game", color = discord.Color.green()
       )
-      embed.add_field(name="%s님 반갑습니다!" %txt, value='Welcome', inline=True)
       embed.add_field(name='보유 자금', value='5000', inline=True)
+      embed.add_field(name="`$도움말`을 통해 사용 가능한 명령어를 확인해보세요" , value='접두사 : `$`', inline=True)
       # embed.set_thumbnail(url="https://cravatar.eu/helmhead/%s/68.png" %txt)
 
       ref = db.reference()
