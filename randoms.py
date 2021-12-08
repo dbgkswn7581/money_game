@@ -48,9 +48,6 @@ def random_value(value):
         dic = ref.get()
         sp = [0.3,0.5,0.7,0.1,1.25,1.5,1.75,2]
         e = random.choice(sp)
-        vjtpsxm = str(int(e*100))+'%'
-        before = dic['admin']['sp'][vjtpsxm]
-        ref.child('admin').child('sp').child(vjtpsxm).set(before+1)
 
 
     if llii == 'sp':
