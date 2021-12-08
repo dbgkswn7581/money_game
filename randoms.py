@@ -46,7 +46,7 @@ def random_value(value):
     elif llii == 'sp':
         ref = db.reference()
         dic = ref.get()
-        sp = [0.25,0.5,0.75,1,1.25,1.5,1.75,2]
+        sp = [0.3,0.5,0.7,0.1,1.25,1.5,1.75,2]
         e = random.choice(sp)
         vjtpsxm = str(int(e*100))+'%'
         before = dic['admin']['sp'][vjtpsxm]
