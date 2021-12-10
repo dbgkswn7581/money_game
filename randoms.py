@@ -31,7 +31,7 @@ def random_value(value):
 
     lli = ['vs','s','m','b','vb','sp']
 
-    llii = np.random.choice(lli, 1, p=[0.1,0.35,0.4,0.1,0.04,0.01])
+    llii = np.random.choice(lli, 1, p=[0.25,0.35,0.25,0.1,0.04,0.01])
     print(llii)
     if llii == 'vs':
         num = random.randrange(1,60)
