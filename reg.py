@@ -70,7 +70,7 @@ def reg(ctx, text):
         ref.update({'%s'%user_id:{
             'nickname':nickname, 
             'money':5000, 
-            'box':{'1':0,'2':0,'3':0,'4':0,'5':0,'6':0,'7':0,'8':0},
+            'box':{'get' : 0, 'time' : 0, 'lost' : 0},
             'pg':{'amount' : 0, 'value' : 0}, 
             'sn':{'amount' : 0, 'value' : 0},
             'mk':{'amount' : 0, 'value' : 0},
