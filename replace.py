@@ -1,8 +1,12 @@
-def replace_e(str):
-    str = str.split('e+')
-    num = str(float(str[0]) * (10**int(str[1])))
-
-    return num
+def replace_e(amount):
+    
+    amount = amount.split('e+')
+    real = amount[0].split('.')
+    real = str(int(real[0])) + str(int(real[1]))
+    if len(real) < (int(amount[1])+1):
+        diff = (int(amount[1])+1) - len(real)
+        real = real + ('0'*diff)
+    return real
 
 
 def remove_zero(num):
@@ -135,6 +139,4 @@ def replace_amount(amount):
         amount = format(amount, ',d')
         return(amount)
 
-print(replace_amount(2.4627010786013127e+19))
 
-24627010786013127000
