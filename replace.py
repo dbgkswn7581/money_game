@@ -27,7 +27,6 @@ def replace_amount(amount):
     amount = str(amount)
     if 'e' in amount:
         amount = replace_e(amount)
-        print(amount)
 
     dud = str()
     aks = str()
