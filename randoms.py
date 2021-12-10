@@ -27,11 +27,11 @@ firebase_admin.initialize_app(cred,{
 
 def random_value(value):
     li = ['plus', 'zero', 'minus']
-    cho = np.random.choice(li, 1, p=[0.48,0.04,0.48])
+    cho = np.random.choice(li, 1, p=[0.41,0.04,0.55])
 
     lli = ['vs','s','m','b','vb','sp']
 
-    llii = np.random.choice(lli, 1, p=[0.1,0.2,0.39,0.2,0.1,0.01])
+    llii = np.random.choice(lli, 1, p=[0.1,0.35,0.4,0.1,0.04,0.01])
     print(llii)
     if llii == 'vs':
         num = random.randrange(1,60)
