@@ -269,22 +269,23 @@ def draw(ctx,text):
                 for i in result:
                     te = i.split(' ')
                 
-                embed.add_field(
-                    name = '%s' %(replace_amount(te[0]) + ' ' +  te[1]), 
-                    value = '```scss\n[%s]```' %(str(p_1[result.index(i)])+'%'),
-                    inline = True
-                )
+                    embed.add_field(
+                        name = '%s' %(replace_amount(te[0]) + ' ' +  te[1]), 
+                        value = '```scss\n[%s]```' %(str(p_1[result.index(i)])+'%'),
+                        inline = True
+                    )
 
 
             else:
                 for i in result:
                     te = i.split(' ')
 
-                embed.add_field(
-                    name = '%s' %(replace_amount(te[0]) + ' ' +  te[1]), 
-                    value = '```scss\n[%s]```' %(str((p[result.index(i)])*100)+'%'),
-                    inline = True
-                )
+                    embed.add_field(
+                        name = '%s' %(replace_amount(te[0]) + ' ' +  te[1]), 
+                        value = '```scss\n[%s]```' %(str((p[result.index(i)])*100)+'%'),
+                        inline = True
+                    )
+
                 embed.set_footer(text = '여기서 나오는 상자는 %d단계의 상자입니다.' %(re-1))
             
             return embed
@@ -408,87 +409,88 @@ def draw(ctx,text):
             user_boxes = data['box']
             user_nickname = data['nickname']
 
-        try:
-            before = user_boxes[int(step)]
+            try:
+                before = user_boxes[int(step)]
 
-            if before < int(amount):
-                ctx_text = '보유 상자 개수가 부족합니다.'
-                return ctx_text
-            else:
-                if int(amount) > 10000:
-                    ctx_text = '한 번에 1만 개를 초과하여 상자를 열 수 없습니다.'
+                if before < int(amount):
+                    ctx_text = '보유 상자 개수가 부족합니다.'
                     return ctx_text
                 else:
-                    result = gacha(int(step), int(amount))
-                    keys = list(result.keys())
-                    values = list(result.values())
-                    
-                    if int(step) == 1:
-                        emoji = ':coin:'
-                    elif int(step) == 2:
-                        emoji = ':dollar:'
-                    elif int(step) == 3:
-                        emoji = ':yen:'
-                    elif int(step) == 4:
-                        emoji = ':euro:'
-                    elif int(step) == 5:
-                        emoji = ':pound:'
-                    elif int(step) == 6:
-                        emoji = ':moneybag:'
-                    elif int(step) == 7:
-                        emoji = ':gem:'
-                    elif int(step) == 8:
-                        emoji = ':credit_card:'
-
-                    embed = discord.Embed(
-                        title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
-                        color = 0xE8CBC0
-                        )
-
-                    re_money = 0
-                    re_box = 0
-
-                    if int(step) == 1:
-                        for i in range(0,11):
-                            slid = keys[i].split(' ')
-                            re_money += (int(slid[0]) * int(values[i]))
-                            slid[0] = replace_amount(int(slid[0]))
-
-                            embed.add_field(
-                            name = '**%s**' %(slid[0]+' '+slid[1]),
-                            value = '```md\n[%d][번]```'%values[i],
-                            inline = True
-                            )
-                        
-                        embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
-                        ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
-                        ref.child(str(user_id)).child('money').set(user_money+re_money)
-                    
-
+                    if int(amount) > 10000:
+                        ctx_text = '한 번에 1만 개를 초과하여 상자를 열 수 없습니다.'
+                        return ctx_text
                     else:
-                        for i in range(0,12):
-                            slid = keys[i].split(' ')
-                            if i >= 0 and i <= 7:
-                                re_money += (int(slid[0]) * int(values[i]))
-                            else:
-                                re_box += (int(slid[0]) * int(values[i]))
+                        result = gacha(int(step), int(amount))
+                        keys = list(result.keys())
+                        values = list(result.values())
+                        
+                        if int(step) == 1:
+                            emoji = ':coin:'
+                        elif int(step) == 2:
+                            emoji = ':dollar:'
+                        elif int(step) == 3:
+                            emoji = ':yen:'
+                        elif int(step) == 4:
+                            emoji = ':euro:'
+                        elif int(step) == 5:
+                            emoji = ':pound:'
+                        elif int(step) == 6:
+                            emoji = ':moneybag:'
+                        elif int(step) == 7:
+                            emoji = ':gem:'
+                        elif int(step) == 8:
+                            emoji = ':credit_card:'
 
-                            slid[0] = replace_amount(int(slid[0]))
-                            
-                            embed.add_field(
-                            name = '**%s**' %(slid[0]+' '+slid[1]),
-                            value = '```md\n[%d][번]```'%values[i],
-                            inline = True
+                        embed = discord.Embed(
+                            title = '%s %d단계 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, int(step), emoji, int(amount), user_nickname),
+                            color = 0xE8CBC0
                             )
-                        embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
-                        ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
-                        ref.child(str(user_id)).child('money').set(user_money+re_money)
 
-                        before = user_boxes[int(step)-1]
-                        ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+                        re_money = 0
+                        re_box = 0
+
+                        if int(step) == 1:
+                            for i in range(0,11):
+                                slid = keys[i].split(' ')
+                                re_money += (int(slid[0]) * int(values[i]))
+                                slid[0] = replace_amount(int(slid[0]))
+
+                                embed.add_field(
+                                name = '**%s**' %(slid[0]+' '+slid[1]),
+                                value = '```md\n[%d][번]```'%values[i],
+                                inline = True
+                                )
+                            
+                            embed.set_footer(text='총 %s 코인 획득' %replace_amount(re_money))
+                            ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+                            ref.child(str(user_id)).child('money').set(user_money+re_money)
+                        
+
+                        else:
+                            for i in range(0,12):
+                                slid = keys[i].split(' ')
+                                if i >= 0 and i <= 7:
+                                    re_money += (int(slid[0]) * int(values[i]))
+                                else:
+                                    re_box += (int(slid[0]) * int(values[i]))
+
+                                slid[0] = replace_amount(int(slid[0]))
+                                
+                                embed.add_field(
+                                name = '**%s**' %(slid[0]+' '+slid[1]),
+                                value = '```md\n[%d][번]```'%values[i],
+                                inline = True
+                                )
+                            embed.set_footer(text='총 %s 코인과 %d단계 상자 %d개 획득' %(replace_amount(re_money), (int(step)-1), re_box))
+                            ref.child(str(user_id)).child('box').child(str(step)).set(before-int(amount))
+                            ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+                            before = user_boxes[int(step)-1]
+                            ref.child(str(user_id)).child('box').child(str(int(step)-1)).set(before+re_box)
+                            
                         
                         return embed
 
-        except:
-            ctx_text = '잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`'
-            return ctx_text
+            except:
+                ctx_text = '잘못된 명령어입니다. 예시 : `$뽑기 오픈 5 10`'
+                return ctx_text
