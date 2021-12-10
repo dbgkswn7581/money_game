@@ -7,16 +7,12 @@ from discord.ext import commands, tasks
 from datetime import datetime
 import time
 from discord.ext.commands import bot
-from discord.flags import Intents
 from firebase_admin import credentials
 from firebase_admin import db
 from randoms import random_value
 
 
-intents = discord.Intents.default()
-intents.members = True
-
-client = commands.Bot(command_prefix="$", intents=intents)
+client = commands.Bot(command_prefix="$")
 
 @client.event
 async def on_ready():
