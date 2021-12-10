@@ -1,3 +1,10 @@
+def replace_e(str):
+    str = str.split('e+')
+    num = str(float(str[0]) * (10**int(str[1])))
+
+    return num
+
+
 def remove_zero(num):
     #num는 문자열인 숫자
     if num == '0000':
@@ -12,18 +19,21 @@ def remove_zero(num):
         return num
 
 def replace_amount(amount):
-  #amount는 정수
-  amount = str(amount)
+    #amount는 정수
+    amount = str(amount)
+    if 'e' in amount:
+        amount = replace_e(amount)
+        print(amount)
 
-  dud = str()
-  aks = str()
-  djr = str()
-  wh = str()
-  rud = str()
+    dud = str()
+    aks = str()
+    djr = str()
+    wh = str()
+    rud = str()
 
-  tnlist = []
+    tnlist = []
 
-  if len(amount) >= 1 and len(amount) <= 4: #일,십,백,천
+    if len(amount) >= 1 and len(amount) <= 4: #일,십,백,천
         dud = amount
         tnlist.append(dud)
 
@@ -32,7 +42,7 @@ def replace_amount(amount):
             re = re + i
         return re
 
-  elif len(amount) >= 5 and len(amount) <= 8: #만,십만,백만,천만
+    elif len(amount) >= 5 and len(amount) <= 8: #만,십만,백만,천만
         dud = amount[-4:]
         aks = amount[:-4]
         dud = remove_zero(dud)
@@ -45,9 +55,9 @@ def replace_amount(amount):
         for i in tnlist:
             re = re + i
         return re
-      
+        
 
-  elif len(amount) >= 9 and len(amount) <= 12: #억,십억,백억,천억
+    elif len(amount) >= 9 and len(amount) <= 12: #억,십억,백억,천억
         dud = amount[-4:]
         aks = amount[-8:-4]
         djr = amount[:-8]
@@ -65,9 +75,9 @@ def replace_amount(amount):
         for i in tnlist:
             re = re + i
         return re
-          
+            
 
-  elif len(amount) >= 13 and len(amount) <= 16: #조,십조,백조,천조
+    elif len(amount) >= 13 and len(amount) <= 16: #조,십조,백조,천조
         dud = amount[-4:]
         aks = amount[-8:-4]
         djr = amount[-12:-8]
@@ -91,7 +101,7 @@ def replace_amount(amount):
             re = re + i
         return re
 
-  elif len(amount) >= 17 and len(amount) <= 20: #경,십경,백경,천경
+    elif len(amount) >= 17 and len(amount) <= 20: #경,십경,백경,천경
         dud = amount[-4:]
         aks = amount[-8:-4]
         djr = amount[-12:-8]
@@ -120,7 +130,11 @@ def replace_amount(amount):
             re = re + i
         return re
 
-  elif len(amount) > 20:
-      amount = int(amount)
-      amount = format(amount, ',d')
-      return(amount)
+    elif len(amount) > 20:
+        amount = int(amount)
+        amount = format(amount, ',d')
+        return(amount)
+
+print(replace_amount(2.4627010786013127e+19))
+
+24627010786013127000
