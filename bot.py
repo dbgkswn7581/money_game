@@ -316,5 +316,9 @@ async def stop(ctx, *text):
 
         await ctx.send(embed=embed)
 
+@client.event
+async def on_command_error(ctx, error):
+    print('ctx : {}, error : {}'.format(ctx, error))
+        
 
 client.run(os.environ['token'])
