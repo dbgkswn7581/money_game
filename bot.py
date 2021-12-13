@@ -62,14 +62,6 @@ async def signout(ctx):
   embed = unreg(ctx)
   await ctx.send(embed=embed)
 
-##############################################################################################
-
-@tasks.loop(seconds=240)
-async def refresh():
-  from refresh import refresh
-
-  refresh()
-
 
 ##############################################################################################################################
 
@@ -252,69 +244,6 @@ async def rank(ctx, *text):
 
 
 ##############################################################################################################################
-
-@client.command(name='start')
-async def start(ctx, *text):
-    pw = text[0]
-    
-    if str(pw) == "6213":
-        refresh.start()
-        print("start process")
-        embed = discord.Embed(title = "Sussess Start",
-        description = "Start Loop" , color = discord.Color.dark_gold()
-        )
-
-        await ctx.send(embed=embed)
-
-    else:
-        embed = discord.Embed(title = "Wrong PassWord",
-        description = "Start Loop" , color = discord.Color.dark_red()
-        )
-
-        await ctx.send(embed=embed)
-
-@client.command(name='restart')
-async def restart(ctx, *text):
-    pw = text[0]
-
-    if str(pw) == "6213":
-        refresh.stop()
-        time.sleep(0.3)
-        refresh.restart()
-        print("restart process")
-        embed = discord.Embed(title = "Sussess Restart",
-        description = "ReStart Loop" , color = discord.Color.dark_gold()
-        )
-
-        await ctx.send(embed=embed)
-
-    else:
-        embed = discord.Embed(title = "Wrong PassWord",
-        description = "ReStart Loop" , color = discord.Color.dark_red()
-        )
-
-        await ctx.send(embed=embed)
-
-@client.command(name='stop')
-async def stop(ctx, *text):
-    pw = text[0]
-    
-    if str(pw) == "6213":
-        refresh.stop()
-        print("stop process")
-
-        embed = discord.Embed(title = "Sussess Stop",
-        description = "Stop Loop" , color = discord.Color.dark_gold()
-        )
-
-        await ctx.send(embed=embed)
-
-    else:
-        embed = discord.Embed(title = "Wrong PassWord",
-        description = "Stop Loop" , color = discord.Color.dark_red()
-        )
-
-        await ctx.send(embed=embed)
 
 @client.event
 async def on_command_error(ctx, error):
