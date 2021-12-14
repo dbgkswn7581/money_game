@@ -155,7 +155,6 @@ def rank(ctx, text):
             del dic['sl']
             del dic['ce']
             del dic['admin']
-            del dic['admin']
             del dic['samsung']
             del dic['kakao']
             del dic['naver']
