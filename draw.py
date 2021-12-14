@@ -145,7 +145,7 @@ def draw(ctx,text):
                             )
 
                     embed.set_footer(text='총 %s 코인 획득' %(replace_amount(re_money)))
-                    ref.child(str(user_id)).child('money').set(user_money-(worth*amount))
+                    ref.child(str(user_id)).child('money').set(user_money-int(int(worth)*int(amount)))
                     ref = db.reference()
                     data = ref.child(str(user_id)).get()
                     user_money = data['money']
