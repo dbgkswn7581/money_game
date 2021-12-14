@@ -22,7 +22,6 @@ def draw(ctx,text):
         del dic['sl']
         del dic['ce']
         del dic['admin']
-        del dic['admin']
         del dic['samsung']
         del dic['kakao']
         del dic['naver']
@@ -146,6 +145,10 @@ def draw(ctx,text):
                             )
 
                     embed.set_footer(text='총 %s 코인 획득' %(replace_amount(re_money)))
+                    ref.child(str(user_id)).child('money').set(user_money-(worth*amount))
+                    ref = db.reference()
+                    data = ref.child(str(user_id)).get()
+                    user_money = data['money']
                     ref.child(str(user_id)).child('box').child('get').set(user_get+re_money)
                     ref.child(str(user_id)).child('box').child('time').set(user_time+int(amount))
                     ref.child(str(user_id)).child('box').child('lost').set(user_lost+int(int(worth)*int(amount)))
