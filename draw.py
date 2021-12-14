@@ -22,6 +22,13 @@ def draw(ctx,text):
         del dic['sl']
         del dic['ce']
         del dic['admin']
+        del dic['admin']
+        del dic['samsung']
+        del dic['kakao']
+        del dic['naver']
+        del dic['korean']
+        del dic['kolon']
+        del dic['hyundai']
 
         user_ids = list(dic.keys())
         user_nicks = []
