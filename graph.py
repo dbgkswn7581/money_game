@@ -25,6 +25,7 @@ def save_graph(com):
         sn = dic['sn']
         tc = dic['tc']
         ua = dic['ua']
+        
 
         companys = [ce, go, mk, nl, pd, pg, sl, sn, tc, ua]
         
