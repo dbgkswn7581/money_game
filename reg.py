@@ -19,6 +19,13 @@ def reg(ctx, text):
     del dic['sn']
     del dic['tc']
     del dic['ua']
+    del dic['admin']
+    del dic['samsung']
+    del dic['kakao']
+    del dic['naver']
+    del dic['korean']
+    del dic['kolon']
+    del dic['hyundai']
     
     for key in dic.keys():
         user_keys.append(key)
@@ -48,6 +55,13 @@ def reg(ctx, text):
         del dic['sn']
         del dic['tc']
         del dic['ua']
+        del dic['admin']
+        del dic['samsung']
+        del dic['kakao']
+        del dic['naver']
+        del dic['korean']
+        del dic['kolon']
+        del dic['hyundai']
         nicks = []
 
         for i in user_keys:
@@ -100,6 +114,13 @@ def unreg(ctx):
     del dic['sn']
     del dic['tc']
     del dic['ua']
+    del dic['admin']
+    del dic['samsung']
+    del dic['kakao']
+    del dic['naver']
+    del dic['korean']
+    del dic['kolon']
+    del dic['hyundai']
 
     for key in dic.keys():
         user_keys.append(key)
