@@ -245,9 +245,9 @@ async def rank(ctx, *text):
 
 ##############################################################################################################################
 
-@client.event
-async def on_command_error(ctx, error):
-    print('ctx : {}, error : {}'.format(ctx, error))
+# @client.event
+# async def on_command_error(ctx, error):
+#     print('ctx : {}, error : {}'.format(ctx, error))
         
 
 client.run(os.environ['token'])
