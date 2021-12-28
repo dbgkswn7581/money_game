@@ -116,49 +116,49 @@ def draw(ctx,text):
             user_time = user_boxes['time'] #구매한 뽑기 상자 개수
             user_lost = user_boxes['lost'] #뽑기에 사용한 돈
 
-            # try:
-            if int(amount) > 10000:
-                ctx_text = '한 번에 1만 개를 초과하여 상자를 열 수 없습니다.'
-                return ctx_text
+            try:
+                if int(amount) > 10000:
+                    ctx_text = '한 번에 1만 개를 초과하여 상자를 열 수 없습니다.'
+                    return ctx_text
 
-            else:
-                result = gacha(int(amount))
-                gacha_list = get_gacha_list(worth)
-                emoji = ':moneybag:'
+                else:
+                    result = gacha(int(amount))
+                    gacha_list = get_gacha_list(worth)
+                    emoji = ':moneybag:'
 
 
-                embed = discord.Embed(
-                    title = '%s %s 코인 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, replace_amount(int(worth)), emoji, int(amount), user_nickname),
-                    color = 0xE8CBC0
-                    )
-
-                re_money = 0
-
-                for i in range(0,6):
-                    earn = result[i] * gacha_list[i]
-                    re_money += earn
-                    
-                    embed.add_field(
-                        name = '**%s**' %(replace_amount(gacha_list[i]) + ' 코인'),
-                        value = '```md\n[%d][번]```'%result[i],
-                        inline = True
+                    embed = discord.Embed(
+                        title = '%s %s 코인 상자 %s \n%d개 오픈 결과 (%s 님의 뽑기)' %(emoji, replace_amount(int(worth)), emoji, int(amount), user_nickname),
+                        color = 0xE8CBC0
                         )
 
-                embed.set_footer(text='총 %s 코인 획득' %(replace_amount(re_money)))
-                ref.child(str(user_id)).child('money').set(user_money-int(int(worth)*int(amount)))
-                ref = db.reference()
-                data = ref.child(str(user_id)).get()
-                user_money = data['money']
-                ref.child(str(user_id)).child('box').child('get').set(user_get+re_money)
-                ref.child(str(user_id)).child('box').child('time').set(user_time+int(amount))
-                ref.child(str(user_id)).child('box').child('lost').set(user_lost+int(int(worth)*int(amount)))
-                ref.child(str(user_id)).child('money').set(user_money+re_money)
+                    re_money = 0
 
-                return embed
+                    for i in range(0,6):
+                        earn = result[i] * gacha_list[i]
+                        re_money += earn
+                        
+                        embed.add_field(
+                            name = '**%s**' %(replace_amount(gacha_list[i]) + ' 코인'),
+                            value = '```md\n[%d][번]```'%result[i],
+                            inline = True
+                            )
 
-            # except:
-            #     ctx_text = '잘못된 명령어입니다. 예시 : `$뽑기 오픈 20000 3`'
-            #     return ctx_text
+                    embed.set_footer(text='총 %s 코인 획득' %(replace_amount(re_money)))
+                    ref.child(str(user_id)).child('money').set(user_money-int(int(worth)*int(amount)))
+                    ref = db.reference()
+                    data = ref.child(str(user_id)).get()
+                    user_money = data['money']
+                    ref.child(str(user_id)).child('box').child('get').set(user_get+re_money)
+                    ref.child(str(user_id)).child('box').child('time').set(user_time+int(amount))
+                    ref.child(str(user_id)).child('box').child('lost').set(user_lost+int(int(worth)*int(amount)))
+                    ref.child(str(user_id)).child('money').set(user_money+re_money)
+
+                    return embed
+
+            except:
+                ctx_text = '잘못된 명령어입니다. 예시 : `$뽑기 오픈 20000 3`'
+                return ctx_text
         else:
             ctx_text = '잘못된 명령어입니다. `$뽑기`를 통해 명령어를 확인하십시오.'
             return ctx_text
