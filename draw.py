@@ -75,14 +75,14 @@ def draw(ctx,text):
             return embed
             
         if order == '확률' or order == 'ㅎㄹ' or order == 'gf':
-            gacha_list = ['0배', '0.5배', '2배', '4배', '10배', '50배', '100배']
+            gacha_list = ['0배', '2배', '4배', '10배', '50배', '100배']
 
             embed = discord.Embed(
                 title = '확률표',
                 color = 0xFF007F
             )
 
-            p = [0.4494,0.105,0.4,0.04,0.005,0.0005,0.0001]
+            p = [0.7794,0.175, 0.04, 0.005,  0.0005, 0.0001]
 
             for i in gacha_list:
                 per = '%.2f'%(p[gacha_list.index(i)]*100)
