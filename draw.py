@@ -134,7 +134,7 @@ def draw(ctx,text):
 
                 re_money = 0
 
-                for i in range(0,7):
+                for i in range(0,6):
                     earn = result[i] * gacha_list[i]
                     re_money += earn
                     
