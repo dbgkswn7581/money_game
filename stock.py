@@ -1,315 +1,520 @@
-from firebase_admin import db
+import sqlite3
+from matplotlib.colors import is_color_like
+from matplotlib.pyplot import title
 from get_time import get_time
 from replace import replace_amount
 from graph import save_graph
 import discord
+from real_stock import real_stock, kospi
+from upload import upload
 
 
 
 def re_time():
   time = get_time()
-  ref = db.reference()
-  dic = ref.get()
-  for i in range(1,11):
-    now = dic['ce'][i]['now']
-    if now == 1:
-      before_time = dic['ce'][i]['time']
-      time_gap = int(time['clock'][3:5]) - int(before_time[3:5])
-        
-      if time_gap == 0:
-        second_gap = int(time['clock'][6:]) - int(before_time[6:])
-        re = {'gap' : second_gap, 'type' : 'sec'}
-        return re
-      else:
-        re = {'gap' : time_gap, 'type' : 'min'}
-        return re
 
-def get_value(dic):
-  for i in range(1,11):
-    now = dic[i]['now']
-    if now == 1:
-      if i > 1 and i <= 10:
-        j = i-1
-        before_value = dic[j]['value']
-        now_value = dic[i]['value']
-        value_gap = now_value - before_value
+  conn = sqlite3.connect('stock.db', isolation_level=None)
+  c = conn.cursor()
+  c = c.execute('SELECT * FROM stock WHERE company=?', ('meta',))
+  c = c.fetchone()
 
-        now_value = format(now_value, ',d')
-
-        if value_gap > 0 :
-
-          re = {'value' : now_value, 'pm' : '+', 'gap' : '▲'+str(value_gap)}
-          return re
-        elif value_gap == 0 :
-          re = {'value' : now_value, 'pm' : '+', 'gap' : '-'}
-          return re
-        elif value_gap < 0 :
-          value_gap = str(value_gap)
-          re = {'value' : now_value, 'pm' : '-', 'gap' : '▼'+value_gap[1:]}
-          return re
-
-      elif i == 1:
-        j = 10
-        before_value = dic[j]['value']
-        now_value = dic[i]['value']
-        value_gap = now_value - before_value
-
-        now_value = format(now_value, ',d')
-
-        if value_gap > 0 :
-          re = {'value' : now_value, 'pm' : '+', 'gap' : '▲'+str(value_gap)}
-          return re
-        elif value_gap == 0 :
-          re = {'value' : now_value, 'pm' : '+', 'gap' : '-'}
-          return re
-        elif value_gap < 0 :
-          value_gap = str(value_gap)
-          re = {'value' : now_value, 'pm' : '-', 'gap' : '▼'+value_gap[1:]}
-          return re
-
-def find_now_num(dic):
-  for i in range(1, 11):
-    now = dic[i]['now']
-    if now == 1:
-      return i
-
-def find_now_value(dic):
-  now = find_now_num(dic)
-
-  return dic[now]['value']
-
-def find_plus_or_minus(before, now, amount):
-  if amount == 0:
-    return '+0'
+  before_time = c[4]
+  time_gap = int(time['clock'][3:5]) - int(before_time[3:5])
+    
+  if time_gap == 0:
+    second_gap = int(time['clock'][6:]) - int(before_time[6:])
+    re = {'gap' : second_gap, 'type' : 'sec'}
+    return re
   else:
-    if now - before > 0:
-      return '+%s' %replace_amount((now-before)*amount)
-    elif now == before:
-      return '+0' 
-    elif now - before < 0:
-      return '-%s' %replace_amount((before-now)*amount)
+    re = {'gap' : time_gap, 'type' : 'min'}
+    return re
+
+def get_stock(tuple):
+  pm = '+' if (tuple[1]-tuple[2]) >= 0 else '-'
+  value = tuple[1]
+  value = format(value, ',')
+
+  gap = str(((tuple[2]-tuple[1])*(-1)) if (tuple[2]-tuple[1]) < 0 else (tuple[2]-tuple[1]))
+  gap = format(int(gap), ',')
+
+  
+  if tuple[2]-tuple[1] == 0:
+    gap = '-'
+  elif pm == '+':
+    gap = '▲' + gap
+  elif pm == '-':
+    gap = '▼' + gap
+
+  list = [pm, value, gap]
+
+  return list
+
+def get_restock(tuple):
+  pm = '+' if tuple[2][0] == '+' else '-'
+  value = tuple[1]
+  gap = tuple[2][1:]
+  
+  if tuple[2][0] == '+':
+    gap = '▲' + gap
+  elif tuple[2][0] == '-':
+    gap = '▼' + gap
+
+  list = [pm, value, gap]
+
+  return list
 
 def find_company(input):
-  if input == '펭귄증권' or input == '펭귄' or input == 'vr' or input == 'vrwr' or input == 'ㅍㄱ' or input == 'ㅍㄱㅈㄱ':
-    return 'pg'
-  elif input == '시네제약' or input == '시네' or input == 'ts' or input == 'tswd' or input == 'ㅅㄴ' or input == 'ㅅㄵㅇ' or input == 'ㅅㄴㅈㅇ':
-    return 'sn'
-  elif input == '마코분식' or input == '마코' or input == 'az' or input == 'azqt' or input == 'ㅁㅋ' or input == 'ㅁㅋㅄ' or input == 'ㅁㅋㅂㅅ':
-    return 'mk'
-  elif input == '윤아마켓' or input == '윤아' or input == 'dd' or input == 'ddaz' or input == 'ㅇㅇ' or input == 'ㅇㅇㅁㅋ':
-    return 'ua'
-  elif input == '냐룽제과' or input == '냐룽' or input == 'sf' or input == 'sfwr' or input == 'ㄴㄹ' or input == 'ㄴㄹㅈㄱ':
-    return 'nl'
-  elif input == '판다은행' or input == '판다' or input == 've' or input == 'vedg' or input == 'ㅍㄷ' or input == 'ㅍㄷㅇㅇ':
-    return 'pd'
-  elif input == '가온그룹' or input == '가온' or input == 'rd' or input == 'rdrf' or input == 'ㄱㅇ' or input == 'ㄱㅇㄱㄹ':
-    return 'go'
-  elif input == '티칩화학' or input == '티칩' or input == 'xc' or input == 'xcgg' or input == 'ㅌㅊ' or input == 'ㅌㅊㅎㅎ':
-    return 'tc'
-  elif input == '시루전자' or input == '시루' or input == 'tf' or input == 'tfww' or input == 'ㅅㄹ' or input == 'ㅅㄹㅈㅈ':
-    return 'sl'
-  elif input == '코어건설' or input == '코어' or input == 'zd' or input == 'zdrt' or input == 'ㅋㅇ' or input == 'ㅋㅇㄳ' or input == 'ㅋㅇㄱㅅ':
-    return 'ce'
+  if input == '메타증권' or input == '메타' or input == 'ax' or input == 'axwr' or input == 'ㅁㅌ' or input == 'ㅁㅌㅈㄱ':
+    return 'meta'
+  elif input == '디딤건설' or input == '디딤' or input == 'ee' or input == 'eert' or input == 'ㄷㄷ' or input == 'ㄷㄷㄳ' or input == 'ㄷㄷㄱㅅ':
+    return 'didim'
+  elif input == '공룡제약' or input == '공룡' or input == 'rf' or input == 'rfwd' or input == 'ㄱㄹ' or input == 'ㄱㄹㅈㅇ':
+    return 'gonglyoug'
+  elif input == '누리마켓' or input == '누리' or input == 'sf' or input == 'sfaz' or input == 'ㄴㄹ' or input == 'ㄴㄻㅋ' or input == 'ㄴㄹㅁㅋ':
+    return 'nuli'
+  elif input == '한길그룹' or input == '한길' or input == 'gr' or input == 'grrf' or input == 'ㅎㄱ' or input == 'ㅎㄱㄱㄹ':
+    return 'hangil'
+  elif input == '신곰화학' or input == '신곰' or input == 'tr' or input == 'trgg' or input == 'ㅅㄱ' or input == 'ㅅㄱㅎㅎ':
+    return 'singom'
+  elif input == '삼성전자' or input == '삼전' or input == '삼성' or input == 'ㅅㅅㅈㅈ' or input == 'ㅅㅈ' or input == 'ㅅㅅ' or input == 'ttww' or input == 'tw' or input == 'tt' or input == 'samsung':
+    return 'samsung'
+  elif input == '현대차' or input == '현대' or input == 'ㅎㄷ' or input == 'ㅎㄷㅊ' or input == 'hyundai' or input == 'ge' or input == 'gec' or input == 'hyundaicar' or input == 'hyundai_car':
+    return 'hyundai'
+  elif input == '네이버' or input == 'ㄴㅇㅂ' or input == 'naver' or input == 'sdq' or input == 'NAVER':
+    return 'naver'
+  elif input == '코오롱인더우' or input == '코오롱' or input == 'ㅋㅇㄹㅇㄷㅇ' or input == 'ㅋㅇㄹ' or input == 'kolon' or input == 'kolon_ina' or input == 'zdfded' or input == 'zdf':
+    return 'kolon'
+  elif input == '대한항공' or input == '대한' or input == 'ㄷㅎㅎㄱ' or input == 'ㄷㅎ' or input == 'korean_air' or input == 'korean' or input == 'korea' or input == 'eg' or input == 'eggr':
+    return 'korean'
+  elif input == '카카오' or input == 'ㅋㅋㅇ' or input == 'kakao' or input == 'zzd' or input == 'KAKAO':
+    return 'kakao'
 
 def return_TF_company(company):
-  companys = ['pg', 'sn', 'mk', 'ua', 'nl', 'pd', 'go', 'tc', 'sl' ,'ce']
+  companys = ['meta','didim','gonglyoug','nuli','hangil','singom','samsung','hyundai','naver','kolon','korean','kakao']
   if company in companys:
     return 'T'
   else:
     return 'F'
 
 def kr_company(com):
-  if com =='pg':
-    return '펭귄증권'
-  elif com == 'sn':
-    return '시네제약'
-  elif com == 'mk':
-    return '마코분식'
-  elif com == 'ua':
-    return '윤아마켓'
-  elif com == 'nl':
-    return '냐룽제과'
-  elif com == 'pd':
-    return '판다은행'
-  elif com == 'go':
-    return '가온그룹'
-  elif com == 'tc':
-    return '티칩화학'
-  elif com == 'sl':
-    return '시루전자'
-  elif com == 'ce':
-    return '코어건설'
+  if com =='meta':
+    return '메타증권'
+  elif com == 'didim':
+    return '디딤건설'
+  elif com == 'gonglyoug':
+    return '공룡제약'
+  elif com == 'nuli':
+    return '누리마켓'
+  elif com == 'hangil':
+    return '한길그룹'
+  elif com == 'singom':
+    return '신곰화학'
+  elif com =='samsung':
+    return '삼성전자'
+  elif com == 'hyundai':
+    return '현대차'
+  elif com == 'naver':
+    return 'NAVER'
+  elif com == 'kolon':
+    return '코오롱인더우'
+  elif com == 'korean':
+    return '대한항공'
+  elif com == 'kakao':
+    return '카카오'
 
+def get_diff(company, value, amount):
+  
+  
+  if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
+    conn = sqlite3.connect('stock.db', isolation_level=None)
+    c = conn.cursor()
+    d = c.execute('SELECT * FROM stock WHERE company=?', (company,))
+    d = d.fetchone()
+    now = d[1]
+    diff = int(value) - int(now)
+
+    if diff < 0:
+      diff = diff * (-1)
+      res = '-' + replace_amount(diff * int(amount))
+    else:
+      res = '+' + replace_amount(diff * int(amount))
+    
+    return res
+
+  elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
+    conn = sqlite3.connect('restock.db', isolation_level=None)
+    c = conn.cursor()
+    d = c.execute('SELECT * FROM restock WHERE company=?', (company,))
+    d = d.fetchone()
+    now = d[1]
+    now = now.replace(',','')
+
+    diff = int(value) - int(now)
+    
+    if diff < 0:
+      diff = diff * (-1)
+      res = '-' + replace_amount(diff * int(amount))
+    else:
+      res = '+' + replace_amount(diff * int(amount))
+    
+    return res
 
 def stock(ctx, text):
+    user_id = ctx.author.id
     user_keys = []
     if text == ():
-        ref = db.reference()
-        dic = ref.get()
-        펭귄 = dic['pg'] # 펭귄 = {1 : {'time':'12:02', 'value' : 1500, 'now' = 0 or 1}, 2 : {...}, ...}
-        시네 = dic['sn']
-        마코 = dic['mk']
-        윤아 = dic['ua']
-        냐룽 = dic['nl']
-        판다 = dic['pd']
-        가온 = dic['go']
-        티칩 = dic['tc']
-        시루 = dic['sl']
-        코어 = dic['ce']
-        pg = get_value(펭귄) # pg = {'value' : now_value, 'pm' : '+', 'gap' : '▲'+str(value_gap)}
-        sn = get_value(시네)
-        mk = get_value(마코)
-        ua = get_value(윤아)
-        nl = get_value(냐룽)
-        pd = get_value(판다)
-        go = get_value(가온)
-        tc = get_value(티칩)
-        sl = get_value(시루)
-        ce = get_value(코어)
+        conn = sqlite3.connect('user.db', isolation_level=None)
+        c = conn.cursor()
+        d = c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+        data = d.fetchone()
+        choose = data[3]
 
+        conn = sqlite3.connect('stock.db', isolation_level=None)
+        c = conn.cursor()
+
+        mt = c.execute('SELECT * FROM stock WHERE company=?', ('meta',))
+        mt = mt.fetchone()
+        mt = get_stock(mt)
+        dd = c.execute('SELECT * FROM stock WHERE company=?', ('didim',))
+        dd = dd.fetchone()
+        dd = get_stock(dd)
+        gl = c.execute('SELECT * FROM stock WHERE company=?', ('gonglyoug',))
+        gl = gl.fetchone()
+        gl = get_stock(gl)
+        nl = c.execute('SELECT * FROM stock WHERE company=?', ('nuli',))
+        nl = nl.fetchone()
+        nl = get_stock(nl)
+        hg = c.execute('SELECT * FROM stock WHERE company=?', ('hangil',))
+        hg = hg.fetchone()
+        hg = get_stock(hg)
+        sg = c.execute('SELECT * FROM stock WHERE company=?', ('singom',))
+        sg = sg.fetchone()
+        sg = get_stock(sg)
+
+        conn = sqlite3.connect('restock.db', isolation_level=None)
+        c = conn.cursor()
+        samsung = c.execute('SELECT * FROM restock WHERE company=?', ('samsung',))
+        samsung = samsung.fetchone()
+        samsung = get_restock(samsung)
+        hyundai = c.execute('SELECT * FROM restock WHERE company=?', ('hyundai',))
+        hyundai = hyundai.fetchone()
+        hyundai = get_restock(hyundai)
+        naver = c.execute('SELECT * FROM restock WHERE company=?', ('naver',))
+        naver = naver.fetchone()
+        naver = get_restock(naver)
+        kolon = c.execute('SELECT * FROM restock WHERE company=?', ('kolon',))
+        kolon = kolon.fetchone()
+        kolon = get_restock(kolon)
+        korean = c.execute('SELECT * FROM restock WHERE company=?', ('korean',))
+        korean = korean.fetchone()
+        korean = get_restock(korean)
+        kakao = c.execute('SELECT * FROM restock WHERE company=?', ('kakao',))
+        kakao = kakao.fetchone()
+        kakao = get_restock(kakao)
 
         time_gap = re_time() # time_gap = {'gap' : time_gap, 'type' : 'min'}
         now_time = get_time()
         now_time = now_time['clock']
+
         
         if time_gap['type'] == 'min':
             if time_gap['gap'] < 0:
                 time_gap['gap'] = time_gap['gap'] * (-1)
                 time_gap['gap'] = 60 - time_gap['gap']
             
-            
-            ctx_text = '주식 정보는 %d분 전 변동됐어요. `%s`\n```diff\n+++ <회사명>  <현재 가치>  <변동량>\n\n%s   펭귄증권     %s    (%s)\n%s   시네제약     %s    (%s)\n%s   마코분식     %s    (%s)\n%s   윤아마켓     %s    (%s)\n%s   냐룽제과     %s    (%s)\n%s   판다은행     %s    (%s)\n%s   가온그룹     %s    (%s)\n%s   티칩화학     %s    (%s)\n%s   시루전자     %s    (%s)\n%s   코어건설     %s    (%s)```\n다음 변동: `%d분 후`'%(time_gap['gap'], now_time, pg['pm'], pg['value'], pg['gap'], sn['pm'], sn['value'], sn['gap'], mk['pm'], mk['value'], mk['gap'], ua['pm'], ua['value'], ua['gap'], nl['pm'], nl['value'], nl['gap'], pd['pm'], pd['value'], pd['gap'], go['pm'], go['value'], go['gap'], tc['pm'], tc['value'], tc['gap'], sl['pm'], sl['value'], sl['gap'], ce['pm'], ce['value'], ce['gap'], 4-time_gap['gap'])
-            return ctx_text
+            embed1 = discord.Embed(
+              title = '**NNSTG**',
+              description = '주식 정보는 %d분 전 변동됐어요.\n현재 시간 : `%s`' %(time_gap['gap'], now_time),
+              color = 0x00b09b)
+            embed1.add_field(
+              name = '메타증권',
+              value = '```diff\n%s %s  (%s)```'%(mt[0], mt[1], mt[2]),
+              inline=True)
+            embed1.add_field(
+              name = '디딤건설',
+              value = '```diff\n%s %s  (%s)```'%(dd[0], dd[1], dd[2]),
+              inline=True)
+            embed1.add_field(
+              name = '공룡제약',
+              value = '```diff\n%s %s  (%s)```'%(gl[0], gl[1], gl[2]),
+              inline=True)
+            embed1.add_field(
+              name = '누리마켓',
+              value = '```diff\n%s %s  (%s)```'%(nl[0], nl[1], nl[2]),
+              inline=True)
+            embed1.add_field(
+              name = '한길그룹',
+              value = '```diff\n%s %s  (%s)```'%(hg[0], hg[1], hg[2]),
+              inline=True)
+            embed1.add_field(
+              name = '신곰화학',
+              value = '```diff\n%s %s  (%s)```'%(sg[0], sg[1], sg[2]),
+              inline=True)
 
+            embed2 = discord.Embed(
+              title = '**KOSPI**',
+              description = '`%s`' %(kospi()),
+              color = 0xb00015)
+
+            embed2.add_field(
+              name = '삼성전자',
+              value = '```diff\n%s %s  (%s)```'%(samsung[0], samsung[1], samsung[2]),
+              inline=True)
+            embed2.add_field(
+              name = '현대차',
+              value = '```diff\n%s %s  (%s)```'%(hyundai[0], hyundai[1], hyundai[2]),
+              inline=True)
+            embed2.add_field(
+              name = 'NAVER',
+              value = '```diff\n%s %s  (%s)```'%(naver[0], naver[1], naver[2]),
+              inline=True)
+            embed2.add_field(
+              name = '코오롱인더우',
+              value = '```diff\n%s %s  (%s)```'%(kolon[0], kolon[1], kolon[2]),
+              inline=True)
+            embed2.add_field(
+              name = '대한항공',
+              value = '```diff\n%s %s  (%s)```'%(korean[0], korean[1], korean[2]),
+              inline=True)
+            embed2.add_field(
+              name = '카카오',
+              value = '```diff\n%s %s  (%s)```'%(kakao[0], kakao[1], kakao[2]),
+              inline=True)
             
         elif time_gap['type'] == 'sec':
-            ctx_text = '주식 정보는 %d초 전 변동됐어요. `%s`\n```diff\n+++ <회사명>  <현재 가치>  <변동량>\n\n%s   펭귄증권     %s    (%s)\n%s   시네제약     %s    (%s)\n%s   마코분식     %s    (%s)\n%s   윤아마켓     %s    (%s)\n%s   냐룽제과     %s    (%s)\n%s   판다은행     %s    (%s)\n%s   가온그룹     %s    (%s)\n%s   티칩화학     %s    (%s)\n%s   시루전자     %s    (%s)\n%s   코어건설     %s    (%s)```\n다음 변동: `%d분 후`'%(time_gap['gap'], now_time, pg['pm'], pg['value'], pg['gap'], sn['pm'], sn['value'], sn['gap'], mk['pm'], mk['value'], mk['gap'], ua['pm'], ua['value'], ua['gap'], nl['pm'], nl['value'], nl['gap'], pd['pm'], pd['value'], pd['gap'], go['pm'], go['value'], go['gap'], tc['pm'], tc['value'], tc['gap'], sl['pm'], sl['value'], sl['gap'], ce['pm'], ce['value'], ce['gap'], 4)
-            return ctx_text
+            embed1 = discord.Embed(
+              title = '**NNSTG**',
+              description = '주식 정보는 %d분 전 변동됐어요.\n현재 시간 : `%s`' %(time_gap['gap'], now_time),
+              color = 0x00b09b)
+
+            embed1.add_field(
+              name = '메타증권',
+              value = '```diff\n%s %s  (%s)```'%(mt[0], mt[1], mt[2]),
+              inline=True)
+            embed1.add_field(
+              name = '디딤건설',
+              value = '```diff\n%s %s  (%s)```'%(dd[0], dd[1], dd[2]),
+              inline=True)
+            embed1.add_field(
+              name = '공룡제약',
+              value = '```diff\n%s %s  (%s)```'%(gl[0], gl[1], gl[2]),
+              inline=True)
+            embed1.add_field(
+              name = '누리마켓',
+              value = '```diff\n%s %s  (%s)```'%(nl[0], nl[1], nl[2]),
+              inline=True)
+            embed1.add_field(
+              name = '한길그룹',
+              value = '```diff\n%s %s  (%s)```'%(hg[0], hg[1], hg[2]),
+              inline=True)
+            embed1.add_field(
+              name = '신곰화학',
+              value = '```diff\n%s %s  (%s)```'%(sg[0], sg[1], sg[2]),
+              inline=True)
             
+            embed2 = discord.Embed(
+              title = '**KOSPI**',
+              description = '`%s`' %(kospi()),
+              color = 0xb00015)
+
+            embed2.add_field(
+              name = '삼성전자',
+              value = '```diff\n%s %s  (%s)```'%(samsung[0], samsung[1], samsung[2]),
+              inline=True)
+            embed2.add_field(
+              name = '현대차',
+              value = '```diff\n%s %s  (%s)```'%(hyundai[0], hyundai[1], hyundai[2]),
+              inline=True)
+            embed2.add_field(
+              name = 'NAVER',
+              value = '```diff\n%s %s  (%s)```'%(naver[0], naver[1], naver[2]),
+              inline=True)
+            embed2.add_field(
+              name = '코오롱인더우',
+              value = '```diff\n%s %s  (%s)```'%(kolon[0], kolon[1], kolon[2]),
+              inline=True)
+            embed2.add_field(
+              name = '대한항공',
+              value = '```diff\n%s %s  (%s)```'%(korean[0], korean[1], korean[2]),
+              inline=True)
+            embed2.add_field(
+              name = '카카오',
+              value = '```diff\n%s %s  (%s)```'%(kakao[0], kakao[1], kakao[2]),
+              inline=True)
+            
+        if choose == 1:
+          return {'one' : embed1, 'two' : embed2}
+
+        elif choose == 2:
+          return embed1
+        
+        elif choose == 2:
+          return embed2
+        
 
     else:
         order = text[0]
         user_id = ctx.author.id
-        user_name = ctx.author.name
 
         if order == '나' or order == 'ㄴ' or order=='s':
-            ref = db.reference()
-            dic = ref.get()
+            conn = sqlite3.connect('user.db', isolation_level=None)
+            c = conn.cursor()
 
-            for i in dic.keys():
-                user_keys.append(i)
+            c.execute('SELECT id,nickname FROM user')
+            user_s = c.fetchall()
+            user_keys = []
+            for i in user_s:
+                user_keys.append(i[0])
+
+            if str(user_id) not in user_keys:
+              ctx_text = "`$가입 (닉네임)`을 통해 시스템에 가입 후 이용바랍니다."
+              return ctx_text
+
+            else:
+              
+
+              conn = sqlite3.connect('user.db', isolation_level=None)
+              c = conn.cursor()
+
+              c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+              data = c.fetchone()
+
+              have_stock = data[4].split('&')
+              nickname = data[1]
+
+              send = '{} 님의 보유 주식 정보입니다.\n```scss\n'.format(nickname)
+
+              for i in range(10):
+                j = have_stock[i]
+
+                if not j == '0':
+                  com_stock = j.replace('[','').replace(']','').split(',')
+                  company = com_stock[0]
+                  if "'" in company:
+                    company = company.replace("'",'')
+                  kor_com = kr_company(company)
+
+                  value = com_stock[1]
+                  amount = com_stock[2]
+
+                  if ' ' in value:
+                    value = value.replace(' ', '')
+                  if "'" in value:
+                    value = value.replace("'",'')
+                  if ' ' in amount:
+                    amount = amount.replace(' ', '')
+                  if "'" in amount:
+                    amount = amount.replace("'",'')
+
+                  diff = get_diff(company, value, amount) # -> str() / ex) diff = '+199조 1억 2993'
+                  send = send + "#{} [{}] : '{}주'; //{} {}\n손익 → {} {}\n".format(i+1, kor_com, replace_amount(int(com_stock[2])), com_stock[3], com_stock[4], diff[0], diff[1:])
+
+              send = send+'```'
+
+              if send == '```scss\n```':
+                send = '보유하신 주식이 없습니다. `$주식`을 통해 주식 정보를 확인해보세요'
+                return send
+              else:
+                return send
+
+
+                
+
+        elif order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == '구입' or order == 'ㄱㅇ' or order == 'rd' or order == 'buy' or order == '매수' or order == 'ㅁㅅ' or order == 'at':
+            conn = sqlite3.connect('user.db', isolation_level=None)
+            c = conn.cursor()
+
+            c = c.execute('SELECT id,nickname FROM user')
+            user_s = c.fetchall()
+            user_keys = []
+            for i in user_s:
+                user_keys.append(i[0])
 
             if str(user_id) not in user_keys:
                 ctx_text = "`$가입 (닉네임)`을 통해 시스템에 가입 후 이용바랍니다."
                 return ctx_text
                 
-            
             else:
-                data = dic[str(user_id)]
-                nickname = data['nickname']
+                conn = sqlite3.connect('user.db', isolation_level=None)
+                c = conn.cursor()
+                data = c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                data = data.fetchone()
+                money = data[2]
+                stock = data[4].split('&')
+                ch = ''
 
-                펭귄 = [data['pg']['amount'], data['pg']['value']]
-                시네 = [data['sn']['amount'], data['sn']['value']]
-                마코 = [data['mk']['amount'], data['mk']['value']]
-                윤아 = [data['ua']['amount'], data['ua']['value']]
-                냐룽 = [data['nl']['amount'], data['nl']['value']]
-                판다 = [data['pd']['amount'], data['pd']['value']]
-                가온 = [data['go']['amount'], data['go']['value']]
-                티칩 = [data['tc']['amount'], data['tc']['value']]
-                시루 = [data['sl']['amount'], data['sl']['value']]
-                코어 = [data['ce']['amount'], data['ce']['value']]
+                for i in stock:
+                  if not i == '0':
+                    ch = ch+'a'
 
-                pg = find_now_value(dic['pg'])
-                sn = find_now_value(dic['sn'])
-                mk = find_now_value(dic['mk'])
-                ua = find_now_value(dic['ua'])
-                nl = find_now_value(dic['nl'])
-                pd = find_now_value(dic['pd'])
-                go = find_now_value(dic['go'])
-                tc = find_now_value(dic['tc'])
-                sl = find_now_value(dic['sl'])
-                ce = find_now_value(dic['ce'])
+                if ch=='aaaaaaaaaa':
+                  ctx_text = '보유하신 주식을 판매 후 주식을 구매해주시기 바랍니다.\n`$주식 나`을 통해 보유 주식을 확인하십시오'
+                  return ctx_text
 
-                ctx_text = '**%s 님의 주식 정보예요.**```md\n  회사.     보유량.\n============================\n- 펭귄증권   <%s 주>\n  손익: < %s >\n- 시네제약   <%s 주>\n  손익: < %s >\n- 마코분식   <%s 주>\n  손익: < %s >\n- 윤아마켓   <%s 주>\n  손익: < %s >\n- 냐룽제과   <%s 주>\n  손익: < %s >\n- 판다은행   <%s 주>\n  손익: < %s >\n- 가온그룹   <%s 주>\n  손익: < %s >\n- 티칩화학   <%s 주>\n  손익: < %s >\n- 시루전자   <%s 주>\n  손익: < %s >\n- 코어건설   <%s 주>\n  손익: < %s >```'%(nickname, 
-                replace_amount(펭귄[0]), find_plus_or_minus(펭귄[1],pg,펭귄[0]), 
-                replace_amount(시네[0]), find_plus_or_minus(시네[1],sn,시네[0]), 
-                replace_amount(마코[0]), find_plus_or_minus(마코[1],mk,마코[0]), 
-                replace_amount(윤아[0]), find_plus_or_minus(윤아[1],ua,윤아[0]), 
-                replace_amount(냐룽[0]), find_plus_or_minus(냐룽[1],nl,냐룽[0]), 
-                replace_amount(판다[0]), find_plus_or_minus(판다[1],pd,판다[0]), 
-                replace_amount(가온[0]), find_plus_or_minus(가온[1],go,가온[0]), 
-                replace_amount(티칩[0]), find_plus_or_minus(티칩[1],tc,티칩[0]), 
-                replace_amount(시루[0]), find_plus_or_minus(시루[1],sl,시루[0]), 
-                replace_amount(코어[0]), find_plus_or_minus(코어[1],ce,코어[0]))
-                
-
-                return ctx_text
-        
-        elif order == '구매' or order == 'ㄱㅁ' or order == 'ra':
-            ref = db.reference()
-            dic = ref.get()
-
-            for i in dic.keys():
-                user_keys.append(i)
-
-            if str(user_id) not in user_keys:
-                ctx_text = "`$가입 (닉네임)`을 통해 시스템에 가입 후 이용바랍니다."
-                return ctx_text
-                
-            
-            else:
-                if len(text) != 3:
-                    ctx_text = '잘못된 명령어입니다.\n예시 : `$주식 구매 펭귄증권 100`'
-                    return ctx_text
-                    
                 else:
-                    company = text[1]
-                    amount = text[2]
-                    if type(company) != str:
-                        ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
-                        return ctx_text
-                    else:
-                        com = find_company(company)
-                        re_company = return_TF_company(com)
-                        
-                        if re_company == 'F':
-                            ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
-                            return ctx_text
-                            
-                        
-                        else:
-                            if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
-                                com = find_company(company)
-                                kr_com = kr_company(com)
+                  if len(text) != 3:
+                      ctx_text = '잘못된 명령어입니다.\n예시 : `$주식 구매 펭귄증권 100`'
+                      return ctx_text
+                      
+                  else:
+                      company = text[1]
+                      amount = text[2]
+                      if type(company) != str:
+                          ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
+                          return ctx_text
+                      else:
+                          com = find_company(company)
+                          re_company = return_TF_company(com)
+                          
+                          if re_company == 'F':
+                              ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
+                              return ctx_text
+                              
+                          else:
+                              if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                                  com = find_company(company)
+                                  kr_com = kr_company(com)
 
-                                ref = db.reference()
-                                dic = ref.get()
-                                data = dic[str(user_id)]
-                                money = data['money']
-                                taked = data[com]['amount']
-                                now_num = find_now_num(dic[com])
-                                now_value = dic[com][now_num]['value']
+                                  if com == 'meta' or com == 'didim' or com == 'gonglyoug' or com == 'nuli' or com == 'hangil' or com == 'singom':
+                                    conn = sqlite3.connect('stock.db', isolation_level=None)
+                                    c = conn.cursor()
+                                    d = c.execute('SELECT * FROM stock WHERE company=?', (com,))
+                                    d = d.fetchone()
+                                    now_value = d[1]
 
-                                amount = int(money / now_value)
 
-                                if amount == 0:
-                                    ctx_text = '보유 금액이 부족합니다.'
-                                    return ctx_text
-                                    
+                                  elif com == 'samsung' or com == 'hyundai' or com == 'naver' or com == 'kolon' or com == 'korean' or com == 'kakao':
+                                    conn = sqlite3.connect('restock.db', isolation_level=None)
+                                    c = conn.cursor()
+                                    d = c.execute('SELECT * FROM restock WHERE company=?', (com,))
+                                    d = d.fetchone()
+                                    now = d[1]
+                                    now_value = now.replace(',','')
 
-                                else:
-                                    ref = db.reference()
-                                    
-                                    ref.child(str(user_id)).child(com).child('value').set(now_value)
-                                    ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
-                                    ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
-                                    
-                                    ctx_text = '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'%(replace_amount(amount*now_value), kr_com, replace_amount(amount))
-                                        
-                                    return ctx_text
 
-                            else:
-                                try:
+                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  c = conn.cursor()
+                                  c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                                  data = c.fetchone()
+
+                                  amount = int(money / now_value)
+
+                                  if (amount * now_value) > money:
+                                      ctx_text = '보유 금액이 부족합니다.'
+                                      return ctx_text
+                                      
+                                  else:
+                                      time = get_time()
+                                      date = time['date']
+                                      clock = time['clock']
+
+                                      upload(user_id, com, amount, now_value, date, clock)
+                                      
+                                      ctx_text = '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'%(replace_amount(amount*now_value), kr_com, replace_amount(amount))
+                                      return ctx_text
+
+                              else:
+                                  # try:
                                     amount = int(amount)
                                     if amount <= 0:
                                         ctx_text = '수량 부분에 자연수만 입력해주십시오.'
@@ -318,13 +523,24 @@ def stock(ctx, text):
                                         com = find_company(company)
                                         kr_com = kr_company(com)
 
-                                        ref = db.reference()
-                                        dic = ref.get()
-                                        data = dic[str(user_id)]
-                                        money = data['money']
-                                        taked = data[com]['amount']
-                                        now_num = find_now_num(dic[com])
-                                        now_value = dic[com][now_num]['value']
+
+                                        if com == 'meta' or com == 'didim' or com == 'gonglyoug' or com == 'nuli' or com == 'hangil' or com == 'singom':
+                                          conn = sqlite3.connect('stock.db', isolation_level=None)
+                                          c = conn.cursor()
+                                          d = c.execute('SELECT * FROM stock WHERE company=?', (com,))
+                                          d = d.fetchone()
+                                          now_value = d[1]
+                                          now_value = int(now_value)
+
+
+                                        elif com == 'samsung' or com == 'hyundai' or com == 'naver' or com == 'kolon' or com == 'korean' or com == 'kakao':
+                                          conn = sqlite3.connect('restock.db', isolation_level=None)
+                                          c = conn.cursor()
+                                          d = c.execute('SELECT * FROM restock WHERE company=?', (com,))
+                                          d = d.fetchone()
+                                          now = d[1]
+                                          now_value = now.replace(',','')
+                                          now_value = int(now_value)
                                         
 
                                         if (amount * now_value) > money:
@@ -332,27 +548,29 @@ def stock(ctx, text):
                                             return ctx_text
                                             
                                         else:
-                                            ref = db.reference()
-                                            dic = ref.get()
+                                            time = get_time()
+                                            date = time['date']
+                                            clock = time['clock']
                                             
-                                            ref.child(str(user_id)).child(com).child('value').set(now_value)
-                                            ref.child(str(user_id)).child(com).child('amount').set(amount + taked)
-                                            ref.child(str(user_id)).child('money').set((money-(amount*now_value)))
+                                            upload(user_id, com, amount, now_value, date, clock)
 
                                             ctx_text = '주식을 구매했어요.\n`- %s 코인`\n`+ %s %s 주`'%(replace_amount(amount*now_value), kr_com, replace_amount(amount))
                                             return ctx_text
                                                 
-                                except:
-                                    ctx_text = '수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```'
-                                    return ctx_text
+                                  # except:
+                                  #     ctx_text = '수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```'
+                                  #     return ctx_text
                                     
+        elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == '매도' or order == 'ㅁㄷ' or order == 'ae' or order == 'sell':
+            conn = sqlite3.connect('user.db', isolation_level=None)
+            c = conn.cursor()
 
-        elif order == '판매' or order == 'ㅍㅁ' or order == 'va':
-            ref = db.reference()
-            dic = ref.get()
+            c = c.execute('SELECT id,nickname FROM user')
+            user_s = c.fetchall()
+            user_keys = []
 
-            for i in dic.keys():
-                user_keys.append(i)
+            for i in user_s:
+                user_keys.append(i[0])
 
             if str(user_id) not in user_keys:
                 ctx_text = "`$가입 (닉네임)`을 통해 시스템에 가입 후 이용바랍니다."
@@ -360,80 +578,213 @@ def stock(ctx, text):
         
             else:
                 if len(text) != 3:
-                    ctx_text = '잘못된 명령어입니다.\n예시 : `$주식 판매 펭귄증권 100`'
+                    ctx_text = '잘못된 명령어입니다.\n예시 : `$주식 판매 2 100`'
                     return ctx_text
                 else:
-                    company = text[1]
+                  # try:
+                    number = int(text[1])
                     amount = text[2]
-                    if type(company) != str:
-                        ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
+
+                    if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
+                      conn = sqlite3.connect('user.db', isolation_level=None)
+                      c = conn.cursor()
+                      c = c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                      data = c.fetchone()
+
+                      have_stock = data[4].split('&')
+                      user_money = int(data[2])
+                      numbers = []
+                      for i in range(10):
+                        j = have_stock[i]
+                        if not j == '0':
+                          numbers.append(i)
+                      
+                      if (number-1) not in numbers:
+                        ctx_text = '입력하신 번호에 해당하는 주식을 보유하지 않고 있습니다. `$주식 나`를 통해 확인해주십시오.'
                         return ctx_text
+
+                      else:
+                        select_stock = have_stock[number-1]
+                        select_stock = select_stock.replace('[','').replace(']','').split(',')
+                        select_company = select_stock[0]
+
+                        if "'" in select_company:
+                          select_company = select_company.replace("'",'')
+                        if ' ' in select_company:
+                          select_company = select_company.replace(" ", "")
+
+                        user_amount = select_stock[2]
+
+                        if "'" in user_amount:
+                          user_amount = user_amount.replace("'",'')
+                        if " " in user_amount:
+                          user_amount = user_amount.replace(" ", '')
                         
-                    else:
-                        com = find_company(company)
-                        re_company = return_TF_company(com)
-                        
-                        if re_company == 'F':
-                            ctx_text = '잘못된 회사명입니다.\n`$주식`을 통해 회사명을 확인해주십시오'
-                            return ctx_text
-                        
-                        else:
-                            if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
-                                com = find_company(company)
-                                kr_com = kr_company(com)
+                        user_amount = int(user_amount)
 
-                                ref = db.reference()
-                                dic = ref.get()
-                                data = dic[str(user_id)]
-                                money = data['money']
-                                taked = data[com]['amount']
-                                now_num = find_now_num(dic[com])
-                                now_value = dic[com][now_num]['value']
+                        if select_company == 'meta' or select_company == 'didim' or select_company == 'gonglyoug' or select_company == 'nuli' or select_company == 'hangil' or select_company == 'singom':
+                          conn = sqlite3.connect('stock.db', isolation_level=None)
+                          c = conn.cursor()
+                          c = c.execute('SELECT * FROM stock WHERE company=?', (select_company, ))
+                          com_data = c.fetchone()
+                          now_value = int(com_data[1])
 
-                                amount = taked
+                          total = (user_amount * now_value) + user_money
 
-                                ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
-                                ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
-
-                                ctx_text = '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'%(replace_amount(amount*now_value), kr_com, replace_amount(amount))
-                                    
-                                return ctx_text
-                            
-
+                          
+                          have_stock[number-1] = '0'
+                          
+                          
+                          res = ''
+                          for i in range(10):
+                            j = have_stock[i]
+                            if i == 9:
+                              res = res + j
                             else:
-                                try:
-                                    amount = int(amount)
-                                    if amount <= 0:
-                                        ctx_text = '수량 부분에 자연수만 입력해주십시오.'
-                                        return ctx_text
+                              res = res + j + '&'
+
+                          conn = sqlite3.connect('user.db', isolation_level=None)
+                          c = conn.cursor()
+                          c.execute('UPDATE user SET money=? WHERE id=?', (str(total), str(user_id)))
+                          c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+
+                          ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(user_amount * now_value), kr_company(select_company), replace_amount(user_amount))
+                          return ctx_text
+
+                          
+                          
+                        elif select_company == 'samsung' or select_company == 'hyundai' or select_company == 'naver' or select_company == 'kolon' or select_company == 'korean' or select_company == 'kakao':
+                          conn = sqlite3.connect('restock.db', isolation_level=None)
+                          c = conn.cursor()
+                          c = c.execute('SELECT * FROM restock WHERE company=?', (select_company, ))
+                          com_data = c.fetchone()
+                          now_value = int(com_data[1].replace(',',''))
+
+                          total = (user_amount * now_value) + user_money
+
+                          have_stock[number-1] = '0'
+
+                          res = ''
+                          for i in range(10):
+                            j = have_stock[i]
+                            if i == 9:
+                              res = res + j
+                            else:
+                              res = res + j + '&'
+
+                          conn = sqlite3.connect('user.db', isolation_level=None)
+                          c = conn.cursor()
+                          c.execute('UPDATE user SET money=? WHERE id=?', (total, str(user_id)))
+                          c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+
+                          ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(user_amount * now_value), kr_company(select_company), replace_amount(user_amount))
+                          return ctx_text
+
+                    else:
+                        # try:
+                          amount = int(amount)
+                          if amount <= 0:
+                              ctx_text = '수량 부분에 자연수만 입력해주십시오.'
+                              return ctx_text
+                          else:
+                            conn = sqlite3.connect('user.db', isolation_level=None)
+                            c = conn.cursor()
+                            c = c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                            data = c.fetchone()
+
+                            have_stock = data[4].split('&')
+                            user_money = int(data[2])
+                            numbers = []
+                            for i in range(10):
+                              j = have_stock[i]
+                              if not j == '0':
+                                numbers.append(i)
+                            
+                            if (number-1) not in numbers:
+                              ctx_text = '입력하신 번호에 해당하는 주식을 보유하지 않고 있습니다. `$주식 나`를 통해 확인해주십시오.'
+                              return ctx_text 
+                            
+                            else:
+                              select_stock = have_stock[number-1]
+                              select_stock = select_stock.replace('[','').replace(']','').split(',')
+                              select_company = select_stock[0].replace("'",'')
+                              user_amount = int(select_stock[2].replace(" ",''))
+
+                              if user_amount < amount:
+                                ctx_text = '보유하신 개수보다 많이 입력하였습니다. `$주식 나`를 통해 확인해주십시오.'
+                                return ctx_text
+                              
+                              else:
+                                if select_company == 'meta' or select_company == 'didim' or select_company == 'gonglyoug' or select_company == 'nuli' or select_company == 'hangil' or select_company == 'singom':
+                                  conn = sqlite3.connect('stock.db', isolation_level=None)
+                                  c = conn.cursor()
+                                  c = c.execute('SELECT * FROM stock WHERE company=?', (select_company, ))
+                                  com_data = c.fetchone()
+                                  now_value = int(com_data[1])
+
+                                  total = (amount * now_value) + user_money
+                                  
+                                  if user_amount-amount == 0:
+                                    have_stock[number-1] = '0'
+                                  else:
+                                    select_stock[2] = user_amount-amount
+                                    have_stock[number-1] = str(select_stock)
+                                  
+                                  res = ''
+                                  for i in range(10):
+                                    j = have_stock[i]
+                                    if i == 9:
+                                      res = res + j
                                     else:
-                                        com = find_company(company)
-                                        kr_com = kr_company(com)
+                                      res = res + j + '&'
 
-                                        ref = db.reference()
-                                        dic = ref.get()
-                                        data = dic[str(user_id)]
-                                        money = data['money']
-                                        taked = data[com]['amount']
-                                        now_num = find_now_num(dic[com])
-                                        now_value = dic[com][now_num]['value']
+                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  c = conn.cursor()
+                                  c.execute('UPDATE user SET money=? WHERE id=?', (str(total), str(user_id)))
+                                  c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
 
-                                        if amount > taked:
-                                            ctx_text = '보유 수량이 입력하신 판매 수량보다 적습니다.'
-                                            return ctx_text
-                                            
-                                        else:
-                                            ref = db.reference()
-                                            dic = ref.get()
-                                            ref.child(str(user_id)).child(com).child('amount').set(taked - amount)
-                                            ref.child(str(user_id)).child('money').set((money+(amount*now_value)))
-                                            ctx_text = '주식을 판매했어요.\n`+ %s 코인`\n`- %s %s 주`'%(replace_amount(amount*now_value), kr_com, replace_amount(amount))
-                                            return ctx_text
-                                                
+                                  ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(amount * now_value), kr_company(select_company), replace_amount(amount))
+                                  return ctx_text
+                                  
+                                elif select_company == 'samsung' or select_company == 'hyundai' or select_company == 'naver' or select_company == 'kolon' or select_company == 'korean' or select_company == 'kakao':
+                                  conn = sqlite3.connect('restock.db', isolation_level=None)
+                                  c = conn.cursor()
+                                  c = c.execute('SELECT * FROM restock WHERE company=?', (select_company, ))
+                                  com_data = c.fetchone()
+                                  now_value = int(com_data[1].replace(',',''))
 
-                                except:
-                                    ctx_text = '수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```'
-                                    return ctx_text
+                                  total = (amount * now_value) + user_money
+                                  
+                                  if user_amount-amount == 0:
+                                    have_stock[number-1] = '0'
+                                  else:
+                                    select_stock[2] = user_amount-amount
+                                    have_stock[number-1] = str(select_stock)
+
+                                  res = ''
+                                  for i in range(10):
+                                    j = have_stock[i]
+                                    if i == 9:
+                                      res = res + j
+                                    else:
+                                      res = res + j + '&'
+
+                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  c = conn.cursor()
+                                  c.execute('UPDATE user SET money=? WHERE id=?', (total, str(user_id)))
+                                  c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+
+                                  ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(amount * now_value), kr_company(select_company), replace_amount(amount))
+                                  return ctx_text
+
+                                
+                  # except:
+                  #   ctx_text = '`$주식 나`를 통해 팔고자 하는 주식의 번호를 확인해주십시오'
+                  #   return ctx_text
+
+                                # except:
+                                #     ctx_text = '수량 부분이 자연수가 아니거나 오류가 발생했습니다.\n```diff\n+++ 오류 발생 시 개발자에게 문의 바랍니다.```'
+                                #     return ctx_text
 
         elif order == '그래프' or order == 'ㄱㄿ' or order == 'ㄱㄹㅍ' or order == 'rfv' or order == 'graph':
             if len(text) > 2:
@@ -441,12 +792,9 @@ def stock(ctx, text):
                 return ctx_text
             else:
                 if len(text) == 1:
-                    save_graph('all')
+                    ctx_text = '그래프를 보고 싶은 회사명을 입력해 주십시오.'
+                    return ctx_text
 
-                    with open('%s.png'%'all', 'rb') as f:
-                        picture = discord.File(f)
-                        ctx_text = [picture,'file']
-                        return ctx_text
                 else:
                     company = text[1]
                     if type(company) != str:
@@ -461,91 +809,87 @@ def stock(ctx, text):
                             return ctx_text
                         
                         else:
-                            ref = db.reference()
-                            dic = ref.get()
-                            com = find_company(company)
+                          if com == 'meta' or com == 'didim' or com == 'gonglyoug' or com == 'nuli' or com == 'hangil' or com == 'singom':
+                              save_graph(com)
+                              
+                              with open('%s.png'%com, 'rb') as f:
+                                  picture = discord.File(f)
+                                  ctx_text = [picture,'file']
+                                  return ctx_text
+                          else:
+                            conn = sqlite3.connect('restock.db', isolation_level=None)
+                            c = conn.cursor()
+                            c = c.execute('SELECT * FROM restock WHERE company=?', (com, ))
+                            c = c.fetchone()
+                            com_name = kr_company(com)
+                            link = c[9]
+                            date = c[7]
+                            clock  = c[8]
+                            time = date + ' ' + clock
+                            embed = discord.Embed(
+                              title = '{} / {}'.format(com_name, time)
+                            )
+                            embed.set_image(url=link)
 
-                            save_graph(com)
-                            
-                            with open('%s.png'%com, 'rb') as f:
-                                picture = discord.File(f)
-                                ctx_text = [picture,'file']
-                                return ctx_text
+                            return embed
 
         elif len(text) == 1:
             nick = order
-            ref = db.reference()
-            dic = ref.get()
-            del dic['pg']
-            del dic['sn']
-            del dic['mk']
-            del dic['ua']
-            del dic['nl']
-            del dic['pd']
-            del dic['go']
-            del dic['tc']
-            del dic['sl']
-            del dic['ce']
-            del dic['admin']
-            del dic['samsung']
-            del dic['kakao']
-            del dic['naver']
-            del dic['korean']
-            del dic['kolon']
-            del dic['hyundai']
+            conn = sqlite3.connect('user.db', isolation_level=None)
+            c = conn.cursor()
 
-            money = str()
-            amount = str()
+            c.execute('SELECT * FROM user')
+            nicks = []
+            for i in c.fetchall():
+                nickname = i[1]
+                nicks.append(nickname)
 
-            user_ids = list(dic.keys())
-            for i in user_ids:
-                if nick == dic[str(i)]['nickname']:
-                    user_id = i
-                    money = dic[str(i)]['money']
-                    amount = dic[str(i)]['ce']['amount'] + dic[str(i)]['go']['amount'] + dic[str(i)]['mk']['amount'] + dic[str(i)]['nl']['amount'] + dic[str(i)]['pd']['amount'] + dic[str(i)]['sl']['amount'] + dic[str(i)]['sn']['amount'] + dic[str(i)]['tc']['amount'] + dic[str(i)]['ua']['amount'] + dic[str(i)]['pg']['amount']
-            
-            if money == '' and amount == '':
-                ctx_text = '입력하신 닉네임은 존재하지 않는 유저입니다.'
-                return ctx_text
+            if nick not in nicks:
+              ctx_text = '입력하신 닉네임은 존재하지 않는 유저입니다.'
+              return ctx_text
+
             else:
-                ref = db.reference()
-                dic = ref.get()
-                data = dic[str(user_id)]
-                nickname = data['nickname']
+                conn = sqlite3.connect('user.db', isolation_level=None)
+                c = conn.cursor()
 
-                펭귄 = [data['pg']['amount'], data['pg']['value']]
-                시네 = [data['sn']['amount'], data['sn']['value']]
-                마코 = [data['mk']['amount'], data['mk']['value']]
-                윤아 = [data['ua']['amount'], data['ua']['value']]
-                냐룽 = [data['nl']['amount'], data['nl']['value']]
-                판다 = [data['pd']['amount'], data['pd']['value']]
-                가온 = [data['go']['amount'], data['go']['value']]
-                티칩 = [data['tc']['amount'], data['tc']['value']]
-                시루 = [data['sl']['amount'], data['sl']['value']]
-                코어 = [data['ce']['amount'], data['ce']['value']]
+                c.execute('SELECT * FROM user WHERE nickname=?', (str(nick),))
+                data = c.fetchone()
 
-                pg = find_now_value(dic['pg'])
-                sn = find_now_value(dic['sn'])
-                mk = find_now_value(dic['mk'])
-                ua = find_now_value(dic['ua'])
-                nl = find_now_value(dic['nl'])
-                pd = find_now_value(dic['pd'])
-                go = find_now_value(dic['go'])
-                tc = find_now_value(dic['tc'])
-                sl = find_now_value(dic['sl'])
-                ce = find_now_value(dic['ce'])
+                have_stock = data[4].split('&')
+                nickname = data[1]
 
-                ctx_text = '**%s 님의 주식 정보예요.**```md\n  회사.     보유량.\n============================\n- 펭귄증권   <%s 주>\n  손익: < %s >\n- 시네제약   <%s 주>\n  손익: < %s >\n- 마코분식   <%s 주>\n  손익: < %s >\n- 윤아마켓   <%s 주>\n  손익: < %s >\n- 냐룽제과   <%s 주>\n  손익: < %s >\n- 판다은행   <%s 주>\n  손익: < %s >\n- 가온그룹   <%s 주>\n  손익: < %s >\n- 티칩화학   <%s 주>\n  손익: < %s >\n- 시루전자   <%s 주>\n  손익: < %s >\n- 코어건설   <%s 주>\n  손익: < %s >```'%(nickname, 
-                replace_amount(펭귄[0]), find_plus_or_minus(펭귄[1],pg,펭귄[0]), 
-                replace_amount(시네[0]), find_plus_or_minus(시네[1],sn,시네[0]), 
-                replace_amount(마코[0]), find_plus_or_minus(마코[1],mk,마코[0]), 
-                replace_amount(윤아[0]), find_plus_or_minus(윤아[1],ua,윤아[0]), 
-                replace_amount(냐룽[0]), find_plus_or_minus(냐룽[1],nl,냐룽[0]), 
-                replace_amount(판다[0]), find_plus_or_minus(판다[1],pd,판다[0]), 
-                replace_amount(가온[0]), find_plus_or_minus(가온[1],go,가온[0]), 
-                replace_amount(티칩[0]), find_plus_or_minus(티칩[1],tc,티칩[0]), 
-                replace_amount(시루[0]), find_plus_or_minus(시루[1],sl,시루[0]), 
-                replace_amount(코어[0]), find_plus_or_minus(코어[1],ce,코어[0]))
-                
+                send = '{} 님의 보유 주식 정보입니다.\n```scss\n'.format(nickname)
 
-                return ctx_text
+                for i in range(10):
+                  j = have_stock[i]
+
+                  if not j == '0':
+                    com_stock = j.replace('[','').replace(']','').split(',')
+                    company = com_stock[0]
+                    if "'" in company:
+                      company = company.replace("'",'')
+                    kor_com = kr_company(company)
+
+                    value = com_stock[1]
+                    amount = com_stock[2]
+
+                    if ' ' in value:
+                      value = value.replace(' ', '')
+                    if "'" in value:
+                      value = value.replace("'",'')
+                    if ' ' in amount:
+                      amount = amount.replace(' ', '')
+                    if "'" in amount:
+                      amount = amount.replace("'",'')
+
+                    diff = get_diff(company, value, amount) # -> str() / ex) diff = '+199조 1억 2993'
+                    send = send + "#{} [{}] : '{}주'; //{} {}\n손익 → {} {}\n".format(i+1, kor_com, replace_amount(int(com_stock[2])), com_stock[3], com_stock[4], diff[0], diff[1:])
+
+                send = send+'```'
+
+                if send == '```scss\n```':
+                  send = '보유하신 주식이 없습니다. `$주식`을 통해 주식 정보를 확인해보세요'
+                  return send
+                else:
+                  return send
+
