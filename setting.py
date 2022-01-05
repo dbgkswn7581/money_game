@@ -6,7 +6,7 @@ def setting(ctx, text):
     
 
     if text == ():
-        ctx_text = '`$설정 주식 (번호)` : \n(번호)에 1을 입력 시 모든 주식 정보가 표시되고, \n2를 입력 시 JJISI 주식 정보만 표시되고, \n3을 입력 시 KOSPI 주식 정보만 표시됩니다.'
+        ctx_text = '`$설정 주식 (번호)` : \n(번호)에 1을 입력 시 모든 주식 정보가 표시되고, \n2를 입력 시 NNSTG 주식 정보만 표시되고, \n3을 입력 시 KOSPI 주식 정보만 표시됩니다.'
         return ctx_text
 
     elif len(text) == 1:
