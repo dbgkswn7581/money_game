@@ -7,10 +7,6 @@ from discord.ext import commands, tasks
 from datetime import datetime
 import time
 from discord.ext.commands import bot
-from firebase_admin import credentials
-from firebase_admin import db
-from randoms import random_value
-
 
 client = commands.Bot(command_prefix="$")
 
