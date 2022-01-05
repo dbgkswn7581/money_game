@@ -3,5 +3,4 @@ asyncio
 discord
 datetime
 numpy
-sqlite3
 matplotlib
