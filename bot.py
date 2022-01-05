@@ -290,18 +290,20 @@ async def reg(ctx, *text):
   await ctx.send(ctx_text)
   
 
-@tasks.loop(seconds=240)
+@tasks.loop(seconds=120)
 async def refresh():
     from refresh import refresh
     from restock import restock
 
-    for i in range(20):
-        if not i == 19:
-            restock()
-            time.sleep(12)
-        elif i == 19:
-            restock()
-            refresh()
+#     for i in range(20):
+#         if not i == 19:
+#             restock()
+#             time.sleep(12)
+#         elif i == 19:
+#             restock()
+#             refresh()
+    restock()
+    refresh()
 
 
 
