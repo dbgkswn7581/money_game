@@ -241,6 +241,40 @@ async def rank(ctx, *text):
   else:
     await ctx.send(embed=embed)
 
+################################################################################################################################################
+
+@client.command(name='설정')
+async def reg(ctx, *text):
+  from setting import setting
+
+  ctx_text = setting(ctx, text)
+
+  await ctx.send(ctx_text)
+  
+@client.command(name='tw')
+async def reg(ctx, *text):
+  from setting import setting
+
+  ctx_text = setting(ctx, text)
+
+  await ctx.send(ctx_text)
+
+@client.command(name='ㅅㅈ')
+async def reg(ctx, *text):
+  from setting import setting
+
+  ctx_text = setting(ctx, text)
+
+  await ctx.send(ctx_text)
+
+@client.command(name='setting')
+async def reg(ctx, *text):
+  from setting import setting
+
+  ctx_text = setting(ctx, text)
+
+  await ctx.send(ctx_text)
+  
 
 
 ##############################################################################################################################
