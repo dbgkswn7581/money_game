@@ -290,7 +290,76 @@ async def reg(ctx, *text):
   await ctx.send(ctx_text)
   
 
+@tasks.loop(seconds=240)
+async def refresh():
+    from refresh import refresh
+    from restock import restock
 
+    for i in range(20):
+        if not i == 19:
+            restock()
+            time.sleep(12)
+        elif i == 19:
+            restock()
+            refresh()
+
+
+
+@client.command(name='start')
+async def start(ctx, *text):
+    if len(text) == 2:
+        order = text[0]
+        pw = text [1]
+
+        if str(pw) == "6213" and order == 'refresh':
+            refresh.start()
+            print("start process - refresh")
+            embed = discord.Embed(title = "Sussess Start",
+            description = "Start Loop - `ReFresh`" , color = discord.Color.dark_gold()
+            )
+
+            await ctx.send(embed=embed)
+        
+
+        else:
+            embed = discord.Embed(title = "Wrong PassWord",
+            description = "Start Loop" , color = discord.Color.dark_red()
+            )
+
+            await ctx.send(embed=embed)
+
+    elif len(text) == 1:
+        await ctx.send('Input Password!')
+
+@client.command(name='stop')
+async def stop(ctx, *text):
+    if len(text) == 2:
+        order = text[0]
+        pw = text [1]
+
+        if str(pw) == "6213" and order == 'refresh':
+            refresh.stop()
+            print("stop process - refresh")
+            embed = discord.Embed(title = "Sussess Stop",
+            description = "Stop Loop - `ReFresh`" , color = discord.Color.dark_gold()
+            )
+
+            await ctx.send(embed=embed)
+        
+
+        else:
+            embed = discord.Embed(title = "Wrong PassWord",
+            description = "Stop Loop" , color = discord.Color.dark_red()
+            )
+
+            await ctx.send(embed=embed)
+            
+    elif len(text) == 1:
+        await ctx.send('Input Password!')
+
+    
+    
+    
 ##############################################################################################################################
 
 # @client.event
