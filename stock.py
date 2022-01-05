@@ -439,7 +439,7 @@ def stock(ctx, text):
                 c = conn.cursor()
                 data = c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
                 data = data.fetchone()
-                money = data[2]
+                money = int(data[2])
                 stock = data[4].split('&')
                 ch = ''
 
@@ -490,6 +490,7 @@ def stock(ctx, text):
                                     d = d.fetchone()
                                     now = d[1]
                                     now_value = now.replace(',','')
+                                    now_value = int(now_value)
 
 
                                   conn = sqlite3.connect('user.db', isolation_level=None)
