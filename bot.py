@@ -59,40 +59,57 @@ async def signout(ctx):
   await ctx.send(embed=embed)
 
 
-##############################################################################################################################
 
+##############################################################################################################################
 @client.command(name="주식")
 async def reg(ctx, *text):
   from stock import stock
   ctx_text = stock(ctx, text)
-
   if type(ctx_text) == list:
     await ctx.send(file=ctx_text[0])
+    
 
-  else:
+  elif type(ctx_text) == str:
     await ctx.send(ctx_text)
+
+  elif type(ctx_text) == dict:
+    await ctx.send(embed = ctx_text['one'])
+    await ctx.send(embed = ctx_text['two'])
+  else:
+    await ctx.send(embed=ctx_text)
 
 @client.command(name="wt")
 async def reg(ctx, *text):
   from stock import stock
   ctx_text = stock(ctx, text)
-
   if type(ctx_text) == list:
     await ctx.send(file=ctx_text[0])
 
-  else:
+  elif type(ctx_text) == str:
     await ctx.send(ctx_text)
+
+  elif type(ctx_text) == dict:
+    await ctx.send(embed = ctx_text['one'])
+    await ctx.send(embed = ctx_text['two'])
+  else:
+    await ctx.send(embed=ctx_text)
 
 @client.command(name="ㅈㅅ")
 async def reg(ctx, *text):
   from stock import stock
   ctx_text = stock(ctx, text)
-
   if type(ctx_text) == list:
     await ctx.send(file=ctx_text[0])
 
-  else:
+  elif type(ctx_text) == str:
     await ctx.send(ctx_text)
+
+  elif type(ctx_text) == dict:
+    await ctx.send(embed = ctx_text['one'])
+    await ctx.send(embed = ctx_text['two'])
+  else:
+    await ctx.send(embed=ctx_text)
+
 
 
 ################################################################################################################################################
@@ -236,6 +253,7 @@ async def rank(ctx, *text):
     await ctx.send(embed)
   else:
     await ctx.send(embed=embed)
+
 
 ################################################################################################################################################
 
