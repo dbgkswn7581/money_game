@@ -1,26 +1,29 @@
 from matplotlib import pyplot as plt
-import sqlite3
+import psycopg2
 
 def save_graph(com):
-    conn = sqlite3.connect('stock.db', isolation_level=None)
+    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
-    c = c.execute('SELECT * FROM stock WHERE company=?', (com, ))
+    c = c.execute('SELECT * FROM stock WHERE company=%s', (com, ))
     com = c.fetchone()
     name = com[0]
     now = int(com[5])
 
     x_values = []
     y_values = []
-    db = name + '.db'
 
-    conn = sqlite3.connect(db, isolation_level=None)
+
+    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
 
     for i in range(1,271):
         num = now + i if not (now+i) > 270 else now + i - 270
         
-        d = c.execute('SELECT * FROM stock WHERE num=?', (num, ))
-        d = d.fetchone()
+        c.execute('SELECT * FROM {} WHERE num=?'.format(name), (num, ))
+        d = c.fetchone()
+
+        c.close()
+        conn.close()
 
         time = str(d[2]) + ' ' + str(d[3])
 
