@@ -224,7 +224,7 @@ def stock(ctx, text):
             
             embed1 = discord.Embed(
               title = '**NNSTG**',
-              description = '현재 시간 : `%s`' %(time_gap['gap'], now_time),
+              description = '현재 시간 : `%s`' %(now_time),
               color = 0x00b09b)
             embed1.add_field(
               name = '메타증권',
@@ -284,7 +284,7 @@ def stock(ctx, text):
         elif time_gap['type'] == 'sec':
             embed1 = discord.Embed(
               title = '**NNSTG**',
-              description = '현재 시간 : `%s`' %(time_gap['gap'], now_time),
+              description = '현재 시간 : `%s`' %(now_time),
               color = 0x00b09b)
 
             embed1.add_field(
