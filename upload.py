@@ -3,8 +3,8 @@ import psycopg2
 def upload(user_id, com, amount, now_value, date, clock):
     conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
-    data = c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
-    data = data.fetchone()
+    c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
+    data = c.fetchone()
     c.close()
     conn.close()
     money = data[2]
