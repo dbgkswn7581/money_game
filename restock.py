@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from get_time import get_time
-import sqlite3
+import psycopg2
 
 
 def restock():
@@ -66,19 +66,25 @@ def restock():
         transes.append(trans)
         graphs.append(graph)
 
-    conn = sqlite3.connect('restock.db', isolation_level=None)
+    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
 
     time = get_time()
 
     for i in company:
-        c.execute('UPDATE restock SET value=? WHERE company=?', (now_prices[company.index(i)], i))
-        c.execute('UPDATE restock SET yes_price=? WHERE company=?', (yesterday_prices[company.index(i)], i))
-        c.execute('UPDATE restock SET yes_percent=? WHERE company=?', (yesterday_percents[company.index(i)], i))
-        c.execute('UPDATE restock SET sum_price=? WHERE company=?', (sum_pirces[company.index(i)], i))
-        c.execute('UPDATE restock SET foreigner=? WHERE company=?', (foreigners[company.index(i)], i))
-        c.execute('UPDATE restock SET trans=? WHERE company=?', (transes[company.index(i)], i))
-        c.execute('UPDATE restock SET date=? WHERE company=?', (time['date'], i))
-        c.execute('UPDATE restock SET clock=? WHERE company=?', (time['clock'], i))
-        c.execute('UPDATE restock SET graph=? WHERE company=?', (graphs[company.index(i)], i))
+        c.execute('UPDATE restock SET value=%s WHERE company=%s', (now_prices[company.index(i)], i))
+        c.execute('UPDATE restock SET yes_price=%s WHERE company=%s', (yesterday_prices[company.index(i)], i))
+        c.execute('UPDATE restock SET yes_percent=%s WHERE company=%s', (yesterday_percents[company.index(i)], i))
+        c.execute('UPDATE restock SET sum_price=%s WHERE company=%s', (sum_pirces[company.index(i)], i))
+        c.execute('UPDATE restock SET foreigner=%s WHERE company=%s', (foreigners[company.index(i)], i))
+        c.execute('UPDATE restock SET trans=%s WHERE company=%s', (transes[company.index(i)], i))
+        c.execute('UPDATE restock SET date=%s WHERE company=%s', (time['date'], i))
+        c.execute('UPDATE restock SET clock=%s WHERE company=%s', (time['clock'], i))
+        c.execute('UPDATE restock SET graph=%s WHERE company=%s', (graphs[company.index(i)], i))
+
+        # c.execute('INSERT INTO restock VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (i, now_prices[company.index(i)], yesterday_prices[company.index(i)], yesterday_percents[company.index(i)],sum_pirces[company.index(i)], foreigners[company.index(i)], transes[company.index(i)], time['date'], time['clock'], graphs[company.index(i)]))
+
+    conn.commit()
+    c.close()
+    conn.close()
     
