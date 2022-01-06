@@ -28,13 +28,15 @@ def restock():
         price_info = str(price_info).split(' ')
         
         now_price = price_info[1] #현재가
-        print(price_info)
         if price_info[3] == '상승': 
             yesterday_price = '+' + str(price_info[4]) #전일비
             yesterday_percent = '+' + str(price_info[6]) #등락률
         elif price_info[3] == '하락':
             yesterday_price = '-' + str(price_info[4]) #전일비
             yesterday_percent = '-' + str(price_info[6]) #등락률
+        elif price_info[3] == '보합':
+            yesterday_price = '+' + str(price_info[4]) #전일비
+            yesterday_percent = '+' + str(price_info[6]) #등락률
 
         sum_pirce = str(soup.select_one('#content > div.section.trade_compare > table > tbody > tr:nth-child(4) > td:nth-child(2)')) #시가총액
         sum_pirce = sum_pirce.replace('<td>','')
