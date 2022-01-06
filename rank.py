@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 import discord
 from replace import replace_amount
 
@@ -9,10 +9,13 @@ def rank(ctx, text):
     elif len(text) == 1:
         user_id = ctx.author.id
         
-        conn = sqlite3.connect('user.db',isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        c.execute('SELECT id,money,stock FROM user')
+        c.execute('SELECT id,money,stock FROM "user"')
         d = c.fetchall()
+
+        c.close()
+        conn.close()
 
         user_value = {}
 
@@ -30,18 +33,22 @@ def rank(ctx, text):
                     company = company.replace("'",'')
 
                     if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
-                        conn = sqlite3.connect('stock.db', isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM stock WHERE company=?', (company, ))
+                        c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
                         value = d[1]
                         value = int(value)
 
                     elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
-                        conn = sqlite3.connect('restock.db', isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM restock WHERE company=?', (company, ))
+                        c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
                         value = d[1]
                         value = int(value.replace(',',''))
 
@@ -66,10 +73,12 @@ def rank(ctx, text):
         moneys.sort()
         moneys.reverse()
 
-        conn = sqlite3.connect('user.db',isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        c.execute('SELECT nickname FROM user')
+        c.execute('SELECT nickname FROM "user"')
         d = c.fetchall()
+        c.close()
+        conn.close()
         user_nicks = []
         for i in d:
             nick = i[0]
@@ -79,10 +88,12 @@ def rank(ctx, text):
         if text[0] == '자신' or text[0] == '나' or text[0] == 'ㄴ' or text[0] == 'me' or text[0] == 'ㅈㅅ' or text[0] == 'wt':
             user_money = rank[str(user_id)]
 
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
-            c.execute('SELECT * FROM user WHERE id=?',(str(user_id),))
+            c.execute('SELECT * FROM "user" WHERE id=%s',(str(user_id),))
             data = c.fetchone()
+            c.close()
+            conn.close()
 
             user_nickname = data[1]
 
@@ -107,10 +118,12 @@ def rank(ctx, text):
         elif text[0] in user_nicks:
             user_nickname = text[0]
 
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
-            c.execute('SELECT * FROM user WHERE nickname=?', (user_nickname,))
+            c.execute('SELECT * FROM "user" WHERE nickname=%s', (user_nickname,))
             d = c.fetchone()
+            c.close()
+            conn.close()
 
             user_id = d[0]
             user_money = rank[str(user_id)]
@@ -151,10 +164,12 @@ def rank(ctx, text):
                     user_id = list(rank.keys())[i]
                     user_money = list(rank.values())[i]
 
-                    conn = sqlite3.connect('user.db',isolation_level=None)
+                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
-                    c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                    c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
                     d = c.fetchone()
+                    c.close()
+                    conn.close()
                     user_nickname = d[1]
 
                     value = value + '**%d.** '%(i+1) + '%s '%(user_nickname) + '`%s`' %replace_amount(user_money) + '\n'
@@ -172,10 +187,12 @@ def rank(ctx, text):
                 for i in range(0, 10):
                     user_id = list(rank.keys())[i]
                     user_money = list(rank.values())[i]
-                    conn = sqlite3.connect('user.db',isolation_level=None)
+                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
-                    c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                    c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
                     d = c.fetchone()
+                    c.close()
+                    conn.close()
                     user_nickname = d[1]
 
                     value = value + '**%d.** '%(i+1) + '%s '%(user_nickname) + '`%s`' %replace_amount(user_money) + '\n'
@@ -197,10 +214,12 @@ def rank(ctx, text):
         try:
             page = int(text[1])
 
-            conn = sqlite3.connect('user.db',isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
-            c.execute('SELECT nickname,money,stock FROM user')
+            c.execute('SELECT nickname,money,stock FROM "user"')
             d = c.fetchall()
+            c.close()
+            conn.close()
 
             user_value = []
 
@@ -217,18 +236,22 @@ def rank(ctx, text):
                         company = company.replace("'",'')
 
                         if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
-                            conn = sqlite3.connect('stock.db', isolation_level=None)
+                            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                             c = conn.cursor()
-                            c.execute('SELECT * FROM stock WHERE company=?', (company, ))
+                            c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                             d = c.fetchone()
+                            c.close()
+                            conn.close()
                             value = d[1]
                             value = int(value)
 
                         elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
-                            conn = sqlite3.connect('restock.db', isolation_level=None)
+                            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                             c = conn.cursor()
-                            c.execute('SELECT * FROM restock WHERE company=?', (company, ))
+                            c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
                             d = c.fetchone()
+                            c.close()
+                            conn.close()
                             value = d[1]
                             value = int(value.replace(',',''))
 
@@ -281,10 +304,12 @@ def rank(ctx, text):
                         user_id = list(rank.keys())[i]
                         user_money = list(rank.values())[i]
 
-                        conn = sqlite3.connect('user.db',isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                        c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id), ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
 
                         user_nickname = d[1]
 
@@ -307,10 +332,12 @@ def rank(ctx, text):
                         user_id = list(rank.keys())[i]
                         user_money = list(rank.values())[i]
 
-                        conn = sqlite3.connect('user.db',isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                        c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id), ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
 
                         user_nickname = d[1]
 
