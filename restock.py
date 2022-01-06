@@ -28,6 +28,7 @@ def restock():
         price_info = str(price_info).split(' ')
         
         now_price = price_info[1] #현재가
+        print(pirce_info)
         if price_info[3] == '상승': 
             yesterday_price = '+' + str(price_info[4]) #전일비
             yesterday_percent = '+' + str(price_info[6]) #등락률
