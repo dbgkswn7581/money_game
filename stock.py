@@ -877,14 +877,14 @@ def stock(ctx, text):
                           else:
                             conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                             c = conn.cursor()
-                            c = c.execute('SELECT * FROM restock WHERE company=%s', (com, ))
-                            c = c.fetchone()
+                            c.execute('SELECT * FROM restock WHERE company=%s', (com, ))
+                            d = c.fetchone()
                             c.close()
                             conn.close()
                             com_name = kr_company(com)
-                            link = c[9]
-                            date = c[7]
-                            clock  = c[8]
+                            link = d[9]
+                            date = d[7]
+                            clock  = d[8]
                             time = date + ' ' + clock
                             embed = discord.Embed(
                               title = '{} / {}'.format(com_name, time)
@@ -914,7 +914,7 @@ def stock(ctx, text):
                 conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                 c = conn.cursor()
 
-                c.execute('SELECT * FROM user WHERE nickname=?', (str(nick),))
+                c.execute('SELECT * FROM "user" WHERE nickname=%s', (str(nick),))
                 data = c.fetchone()
                 c.close()
                 conn.close()
