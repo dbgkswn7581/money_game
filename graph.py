@@ -4,7 +4,7 @@ import psycopg2
 def save_graph(com):
     conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
-    c = c.execute('SELECT * FROM stock WHERE company=%s', (com, ))
+    c.execute('SELECT * FROM stock WHERE company=%s', (com, ))
     com = c.fetchone()
     name = com[0]
     now = int(com[5])
@@ -19,17 +19,19 @@ def save_graph(com):
     for i in range(1,271):
         num = now + i if not (now+i) > 270 else now + i - 270
         
-        c.execute('SELECT * FROM {} WHERE num=?'.format(name), (num, ))
+        c.execute('SELECT * FROM {} WHERE num=%s'.format(name), (num, ))
         d = c.fetchone()
 
-        c.close()
-        conn.close()
+        
 
         time = str(d[2]) + ' ' + str(d[3])
 
         x_values.append(time)
         y_values.append(int(d[1]))
-    
+        
+    c.close()
+    conn.close()
+
     if name == 'meta':
         plt_color = 'BurlyWood'
     elif name == 'didim':
