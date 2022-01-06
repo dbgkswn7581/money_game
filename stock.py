@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 from matplotlib.colors import is_color_like
 from matplotlib.pyplot import title
 from get_time import get_time
@@ -13,11 +13,12 @@ from upload import upload
 def re_time():
   time = get_time()
 
-  conn = sqlite3.connect('stock.db', isolation_level=None)
+  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
   c = conn.cursor()
-  c = c.execute('SELECT * FROM stock WHERE company=?', ('meta',))
+  c.execute('SELECT * FROM stock WHERE company=%s', ('meta',))
   c = c.fetchone()
-
+  c.close()
+  conn.close()
   before_time = c[4]
   time_gap = int(time['clock'][3:5]) - int(before_time[3:5])
     
@@ -126,10 +127,12 @@ def get_diff(company, value, amount):
   
   
   if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
-    conn = sqlite3.connect('stock.db', isolation_level=None)
+    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
-    d = c.execute('SELECT * FROM stock WHERE company=?', (company,))
-    d = d.fetchone()
+    c.execute('SELECT * FROM stock WHERE company=%s', (company,))
+    d = c.fetchone()
+    c.close()
+    conn.close()
     now = d[1]
     diff = int(value) - int(now)
 
@@ -142,10 +145,12 @@ def get_diff(company, value, amount):
     return res
 
   elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
-    conn = sqlite3.connect('restock.db', isolation_level=None)
+    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
     c = conn.cursor()
-    d = c.execute('SELECT * FROM restock WHERE company=?', (company,))
-    d = d.fetchone()
+    c.execute('SELECT * FROM restock WHERE company=%s', (company,))
+    d = c.fetchone()
+    c.close()
+    conn.close()
     now = d[1]
     now = now.replace(',','')
 
@@ -163,54 +168,61 @@ def stock(ctx, text):
     user_id = ctx.author.id
     user_keys = []
     if text == ():
-        conn = sqlite3.connect('user.db', isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        d = c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
-        data = d.fetchone()
+        c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
+        data = c.fetchone()
+        c.close()
+        conn.close()
         choose = data[3]
 
-        conn = sqlite3.connect('stock.db', isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
 
-        mt = c.execute('SELECT * FROM stock WHERE company=?', ('meta',))
-        mt = mt.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('meta',))
+        mt = c.fetchone()
         mt = get_stock(mt)
-        dd = c.execute('SELECT * FROM stock WHERE company=?', ('didim',))
-        dd = dd.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('didim',))
+        dd = c.fetchone()
         dd = get_stock(dd)
-        gl = c.execute('SELECT * FROM stock WHERE company=?', ('gonglyoug',))
-        gl = gl.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('gonglyoug',))
+        gl = c.fetchone()
         gl = get_stock(gl)
-        nl = c.execute('SELECT * FROM stock WHERE company=?', ('nuli',))
-        nl = nl.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('nuli',))
+        nl = c.fetchone()
         nl = get_stock(nl)
-        hg = c.execute('SELECT * FROM stock WHERE company=?', ('hangil',))
-        hg = hg.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('hangil',))
+        hg = c.fetchone()
         hg = get_stock(hg)
-        sg = c.execute('SELECT * FROM stock WHERE company=?', ('singom',))
-        sg = sg.fetchone()
+        c.execute('SELECT * FROM stock WHERE company=%s', ('singom',))
+        sg = c.fetchone()
         sg = get_stock(sg)
+        c.close()
+        conn.close()
 
-        conn = sqlite3.connect('restock.db', isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        samsung = c.execute('SELECT * FROM restock WHERE company=?', ('samsung',))
+        samsung = c.execute('SELECT * FROM restock WHERE company=%s', ('samsung',))
         samsung = samsung.fetchone()
         samsung = get_restock(samsung)
-        hyundai = c.execute('SELECT * FROM restock WHERE company=?', ('hyundai',))
+        hyundai = c.execute('SELECT * FROM restock WHERE company=%s', ('hyundai',))
         hyundai = hyundai.fetchone()
         hyundai = get_restock(hyundai)
-        naver = c.execute('SELECT * FROM restock WHERE company=?', ('naver',))
+        naver = c.execute('SELECT * FROM restock WHERE company=%s', ('naver',))
         naver = naver.fetchone()
         naver = get_restock(naver)
-        kolon = c.execute('SELECT * FROM restock WHERE company=?', ('kolon',))
+        kolon = c.execute('SELECT * FROM restock WHERE company=%s', ('kolon',))
         kolon = kolon.fetchone()
         kolon = get_restock(kolon)
-        korean = c.execute('SELECT * FROM restock WHERE company=?', ('korean',))
+        korean = c.execute('SELECT * FROM restock WHERE company=%s', ('korean',))
         korean = korean.fetchone()
         korean = get_restock(korean)
-        kakao = c.execute('SELECT * FROM restock WHERE company=?', ('kakao',))
+        kakao = c.execute('SELECT * FROM restock WHERE company=%s', ('kakao',))
         kakao = kakao.fetchone()
         kakao = get_restock(kakao)
+
+        c.close()
+        conn.close()
 
         time_gap = re_time() # time_gap = {'gap' : time_gap, 'type' : 'min'}
         now_time = get_time()
@@ -224,7 +236,7 @@ def stock(ctx, text):
             
             embed1 = discord.Embed(
               title = '**NNSTG**',
-              description = '현재 시간 : `%s`' %(now_time),
+              description = '주식 정보는 %d분 전 변동됐어요.\n현재 시간 : `%s`' %(time_gap['gap'], now_time),
               color = 0x00b09b)
             embed1.add_field(
               name = '메타증권',
@@ -284,7 +296,7 @@ def stock(ctx, text):
         elif time_gap['type'] == 'sec':
             embed1 = discord.Embed(
               title = '**NNSTG**',
-              description = '현재 시간 : `%s`' %(now_time),
+              description = '주식 정보는 %d분 전 변동됐어요.\n현재 시간 : `%s`' %(time_gap['gap'], now_time),
               color = 0x00b09b)
 
             embed1.add_field(
@@ -357,11 +369,13 @@ def stock(ctx, text):
         user_id = ctx.author.id
 
         if order == '나' or order == 'ㄴ' or order=='s':
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
 
-            c.execute('SELECT id,nickname FROM user')
+            c.execute('SELECT id,nickname FROM "user"')
             user_s = c.fetchall()
+            c.close()
+            conn.close()
             user_keys = []
             for i in user_s:
                 user_keys.append(i[0])
@@ -373,11 +387,13 @@ def stock(ctx, text):
             else:
               
 
-              conn = sqlite3.connect('user.db', isolation_level=None)
+              conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
               c = conn.cursor()
 
-              c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+              c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
               data = c.fetchone()
+              c.close()
+              conn.close()
 
               have_stock = data[4].split('&')
               nickname = data[1]
@@ -421,11 +437,13 @@ def stock(ctx, text):
                 
 
         elif order == '구매' or order == 'ㄱㅁ' or order == 'ra' or order == '구입' or order == 'ㄱㅇ' or order == 'rd' or order == 'buy' or order == '매수' or order == 'ㅁㅅ' or order == 'at':
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
 
-            c = c.execute('SELECT id,nickname FROM user')
+            c.execute('SELECT id,nickname FROM "user"')
             user_s = c.fetchall()
+            c.close()
+            conn.close()
             user_keys = []
             for i in user_s:
                 user_keys.append(i[0])
@@ -435,10 +453,12 @@ def stock(ctx, text):
                 return ctx_text
                 
             else:
-                conn = sqlite3.connect('user.db', isolation_level=None)
+                conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                 c = conn.cursor()
-                data = c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                data = c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
                 data = data.fetchone()
+                c.close()
+                conn.close()
                 money = int(data[2])
                 stock = data[4].split('&')
                 ch = ''
@@ -476,27 +496,34 @@ def stock(ctx, text):
                                   kr_com = kr_company(com)
 
                                   if com == 'meta' or com == 'didim' or com == 'gonglyoug' or com == 'nuli' or com == 'hangil' or com == 'singom':
-                                    conn = sqlite3.connect('stock.db', isolation_level=None)
+                                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                     c = conn.cursor()
-                                    d = c.execute('SELECT * FROM stock WHERE company=?', (com,))
-                                    d = d.fetchone()
+                                    c.execute('SELECT * FROM stock WHERE company=%s', (com,))
+                                    d = c.fetchone()
+                                    c.close()
+                                    conn.close()
                                     now_value = d[1]
 
 
                                   elif com == 'samsung' or com == 'hyundai' or com == 'naver' or com == 'kolon' or com == 'korean' or com == 'kakao':
-                                    conn = sqlite3.connect('restock.db', isolation_level=None)
+                                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                     c = conn.cursor()
-                                    d = c.execute('SELECT * FROM restock WHERE company=?', (com,))
-                                    d = d.fetchone()
+                                    c.execute('SELECT * FROM restock WHERE company=%s', (com,))
+                                    d = c.fetchone()
+                                    c.close()
+                                    conn.close()
                                     now = d[1]
                                     now_value = now.replace(',','')
                                     now_value = int(now_value)
 
 
-                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c.execute('SELECT * FROM user WHERE id=?', (str(user_id),))
+                                  c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
                                   data = c.fetchone()
+
+                                  c.close()
+                                  conn.close()
 
                                   amount = int(money / now_value)
 
@@ -526,19 +553,23 @@ def stock(ctx, text):
 
 
                                         if com == 'meta' or com == 'didim' or com == 'gonglyoug' or com == 'nuli' or com == 'hangil' or com == 'singom':
-                                          conn = sqlite3.connect('stock.db', isolation_level=None)
+                                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                           c = conn.cursor()
-                                          d = c.execute('SELECT * FROM stock WHERE company=?', (com,))
-                                          d = d.fetchone()
+                                          c.execute('SELECT * FROM stock WHERE company=%s', (com,))
+                                          d = c.fetchone()
+                                          c.close()
+                                          conn.close()
                                           now_value = d[1]
                                           now_value = int(now_value)
 
 
                                         elif com == 'samsung' or com == 'hyundai' or com == 'naver' or com == 'kolon' or com == 'korean' or com == 'kakao':
-                                          conn = sqlite3.connect('restock.db', isolation_level=None)
+                                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                           c = conn.cursor()
-                                          d = c.execute('SELECT * FROM restock WHERE company=?', (com,))
-                                          d = d.fetchone()
+                                          c.execute('SELECT * FROM restock WHERE company=%s', (com,))
+                                          d = c.fetchone()
+                                          c.close()
+                                          conn.close()
                                           now = d[1]
                                           now_value = now.replace(',','')
                                           now_value = int(now_value)
@@ -563,11 +594,13 @@ def stock(ctx, text):
                                   #     return ctx_text
                                     
         elif order == '판매' or order == 'ㅍㅁ' or order == 'va' or order == '매도' or order == 'ㅁㄷ' or order == 'ae' or order == 'sell':
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
 
-            c = c.execute('SELECT id,nickname FROM user')
+            c = c.execute('SELECT id,nickname FROM "user"')
             user_s = c.fetchall()
+            c.close()
+            conn.close()
             user_keys = []
 
             for i in user_s:
@@ -587,10 +620,12 @@ def stock(ctx, text):
                     amount = text[2]
 
                     if amount == '다' or amount == 'ㄷ' or amount == 'all' or amount == 'e':
-                      conn = sqlite3.connect('user.db', isolation_level=None)
+                      conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                       c = conn.cursor()
-                      c = c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                      c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id), ))
                       data = c.fetchone()
+                      c.close()
+                      conn.close()
 
                       have_stock = data[4].split('&')
                       user_money = int(data[2])
@@ -624,10 +659,13 @@ def stock(ctx, text):
                         user_amount = int(user_amount)
 
                         if select_company == 'meta' or select_company == 'didim' or select_company == 'gonglyoug' or select_company == 'nuli' or select_company == 'hangil' or select_company == 'singom':
-                          conn = sqlite3.connect('stock.db', isolation_level=None)
+                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                           c = conn.cursor()
-                          c = c.execute('SELECT * FROM stock WHERE company=?', (select_company, ))
+                          c.execute('SELECT * FROM stock WHERE company=%s', (select_company, ))
+
                           com_data = c.fetchone()
+                          c.close()
+                          conn.close()
                           now_value = int(com_data[1])
 
                           total = (user_amount * now_value) + user_money
@@ -644,10 +682,13 @@ def stock(ctx, text):
                             else:
                               res = res + j + '&'
 
-                          conn = sqlite3.connect('user.db', isolation_level=None)
+                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                           c = conn.cursor()
-                          c.execute('UPDATE user SET money=? WHERE id=?', (str(total), str(user_id)))
-                          c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+                          c.execute('UPDATE "user" SET money=%s WHERE id=%s', (str(total), str(user_id)))
+                          c.execute('UPDATE "user" SET stock=%s WHERE id=%s', (res, str(user_id)))
+                          conn.commit()
+                          c.close()
+                          conn.close()
 
                           ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(user_amount * now_value), kr_company(select_company), replace_amount(user_amount))
                           return ctx_text
@@ -655,10 +696,12 @@ def stock(ctx, text):
                           
                           
                         elif select_company == 'samsung' or select_company == 'hyundai' or select_company == 'naver' or select_company == 'kolon' or select_company == 'korean' or select_company == 'kakao':
-                          conn = sqlite3.connect('restock.db', isolation_level=None)
+                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                           c = conn.cursor()
-                          c = c.execute('SELECT * FROM restock WHERE company=?', (select_company, ))
+                          c.execute('SELECT * FROM restock WHERE company=%s', (select_company, ))
                           com_data = c.fetchone()
+                          c.close()
+                          conn.close()
                           now_value = int(com_data[1].replace(',',''))
 
                           total = (user_amount * now_value) + user_money
@@ -673,10 +716,13 @@ def stock(ctx, text):
                             else:
                               res = res + j + '&'
 
-                          conn = sqlite3.connect('user.db', isolation_level=None)
+                          conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                           c = conn.cursor()
-                          c.execute('UPDATE user SET money=? WHERE id=?', (total, str(user_id)))
-                          c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+                          c.execute('UPDATE "user" SET money=%s WHERE id=%s', (total, str(user_id)))
+                          c.execute('UPDATE "user" SET stock=%s WHERE id=%s', (res, str(user_id)))
+                          conn.commit()
+                          c.close()
+                          conn.close()
 
                           ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(user_amount * now_value), kr_company(select_company), replace_amount(user_amount))
                           return ctx_text
@@ -688,10 +734,12 @@ def stock(ctx, text):
                               ctx_text = '수량 부분에 자연수만 입력해주십시오.'
                               return ctx_text
                           else:
-                            conn = sqlite3.connect('user.db', isolation_level=None)
+                            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                             c = conn.cursor()
-                            c = c.execute('SELECT * FROM user WHERE id=?', (str(user_id), ))
+                            c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id), ))
                             data = c.fetchone()
+                            c.close()
+                            conn.close()
 
                             have_stock = data[4].split('&')
                             user_money = int(data[2])
@@ -717,11 +765,13 @@ def stock(ctx, text):
                               
                               else:
                                 if select_company == 'meta' or select_company == 'didim' or select_company == 'gonglyoug' or select_company == 'nuli' or select_company == 'hangil' or select_company == 'singom':
-                                  conn = sqlite3.connect('stock.db', isolation_level=None)
+                                  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c = c.execute('SELECT * FROM stock WHERE company=?', (select_company, ))
+                                  c = c.execute('SELECT * FROM stock WHERE company=%s', (select_company, ))
                                   com_data = c.fetchone()
                                   now_value = int(com_data[1])
+                                  c.close()
+                                  conn.close()
 
                                   total = (amount * now_value) + user_money
                                   
@@ -739,20 +789,25 @@ def stock(ctx, text):
                                     else:
                                       res = res + j + '&'
 
-                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c.execute('UPDATE user SET money=? WHERE id=?', (str(total), str(user_id)))
-                                  c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+                                  c.execute('UPDATE "user" SET money=%s WHERE id=%s', (str(total), str(user_id)))
+                                  c.execute('UPDATE "user" SET stock=%s WHERE id=%s', (res, str(user_id)))
+                                  conn.commit()
+                                  c.close()
+                                  conn.close()
 
                                   ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(amount * now_value), kr_company(select_company), replace_amount(amount))
                                   return ctx_text
                                   
                                 elif select_company == 'samsung' or select_company == 'hyundai' or select_company == 'naver' or select_company == 'kolon' or select_company == 'korean' or select_company == 'kakao':
-                                  conn = sqlite3.connect('restock.db', isolation_level=None)
+                                  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c = c.execute('SELECT * FROM restock WHERE company=?', (select_company, ))
+                                  c.execute('SELECT * FROM restock WHERE company=%s', (select_company, ))
                                   com_data = c.fetchone()
                                   now_value = int(com_data[1].replace(',',''))
+                                  c.close()
+                                  conn.close()
 
                                   total = (amount * now_value) + user_money
                                   
@@ -770,10 +825,12 @@ def stock(ctx, text):
                                     else:
                                       res = res + j + '&'
 
-                                  conn = sqlite3.connect('user.db', isolation_level=None)
+                                  conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c.execute('UPDATE user SET money=? WHERE id=?', (total, str(user_id)))
-                                  c.execute('UPDATE user SET stock=? WHERE id=?', (res, str(user_id)))
+                                  c.execute('UPDATE "user" SET money=%s WHERE id=%s', (total, str(user_id)))
+                                  c.execute('UPDATE "user" SET stock=%s WHERE id=%s', (res, str(user_id)))
+                                  c.close()
+                                  conn.close()
 
                                   ctx_text = '주식을 판매했어요.\n`+ {} 코인`\n`- {} {}주`'.format(replace_amount(amount * now_value), kr_company(select_company), replace_amount(amount))
                                   return ctx_text
@@ -818,10 +875,12 @@ def stock(ctx, text):
                                   ctx_text = [picture,'file']
                                   return ctx_text
                           else:
-                            conn = sqlite3.connect('restock.db', isolation_level=None)
+                            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                             c = conn.cursor()
-                            c = c.execute('SELECT * FROM restock WHERE company=?', (com, ))
+                            c = c.execute('SELECT * FROM restock WHERE company=%s', (com, ))
                             c = c.fetchone()
+                            c.close()
+                            conn.close()
                             com_name = kr_company(com)
                             link = c[9]
                             date = c[7]
@@ -836,26 +895,29 @@ def stock(ctx, text):
 
         elif len(text) == 1:
             nick = order
-            conn = sqlite3.connect('user.db', isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
 
-            c.execute('SELECT * FROM user')
+            c.execute('SELECT * FROM "user"')
             nicks = []
             for i in c.fetchall():
                 nickname = i[1]
                 nicks.append(nickname)
+            c.close()
+            conn.close()
 
             if nick not in nicks:
               ctx_text = '입력하신 닉네임은 존재하지 않는 유저입니다.'
               return ctx_text
 
             else:
-                conn = sqlite3.connect('user.db', isolation_level=None)
+                conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                 c = conn.cursor()
 
                 c.execute('SELECT * FROM user WHERE nickname=?', (str(nick),))
                 data = c.fetchone()
-
+                c.close()
+                conn.close()
                 have_stock = data[4].split('&')
                 nickname = data[1]
 
