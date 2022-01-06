@@ -455,8 +455,8 @@ def stock(ctx, text):
             else:
                 conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                 c = conn.cursor()
-                data = c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
-                data = data.fetchone()
+                c.execute('SELECT * FROM "user" WHERE id=%s', (str(user_id),))
+                data = c.fetchone()
                 c.close()
                 conn.close()
                 money = int(data[2])
@@ -597,7 +597,7 @@ def stock(ctx, text):
             conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
 
-            c = c.execute('SELECT id,nickname FROM "user"')
+            c.execute('SELECT id,nickname FROM "user"')
             user_s = c.fetchall()
             c.close()
             conn.close()
@@ -767,7 +767,7 @@ def stock(ctx, text):
                                 if select_company == 'meta' or select_company == 'didim' or select_company == 'gonglyoug' or select_company == 'nuli' or select_company == 'hangil' or select_company == 'singom':
                                   conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                                   c = conn.cursor()
-                                  c = c.execute('SELECT * FROM stock WHERE company=%s', (select_company, ))
+                                  c.execute('SELECT * FROM stock WHERE company=%s', (select_company, ))
                                   com_data = c.fetchone()
                                   now_value = int(com_data[1])
                                   c.close()
