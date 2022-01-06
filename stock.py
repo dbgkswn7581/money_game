@@ -16,10 +16,10 @@ def re_time():
   conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
   c = conn.cursor()
   c.execute('SELECT * FROM stock WHERE company=%s', ('meta',))
-  c = c.fetchone()
+  d = c.fetchone()
   c.close()
   conn.close()
-  before_time = c[4]
+  before_time = d[4]
   time_gap = int(time['clock'][3:5]) - int(before_time[3:5])
     
   if time_gap == 0:
