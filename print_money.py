@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 import discord
 from replace import replace_amount
 
@@ -7,10 +7,13 @@ def print_money(ctx, text):
     user_id = ctx.author.id
 
     if len(text) == 0:
-        conn = sqlite3.connect('user.db',isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        data = c.execute('SELECT * FROM user WHERE id=?',(str(user_id),))
+        data = c.execute('SELECT * FROM "user" WHERE id=%s',(str(user_id),))
         data = data.fetchone()
+
+        c.close()
+        conn.close()
 
         money = int(data[2])
         nick = data[1]
@@ -27,18 +30,26 @@ def print_money(ctx, text):
                 amount = int(it[2])
 
                 if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
-                    conn = sqlite3.connect('stock.db', isolation_level=None)
+                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
-                    c.execute('SELECT * FROM stock WHERE company=?', (company, ))
+                    c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                     d = c.fetchone()
+
+                    c.close()
+                    conn.close()
+
                     value = d[1]
                     value = int(value)
 
                 elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
-                    conn = sqlite3.connect('restock.db', isolation_level=None)
+                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
-                    c.execute('SELECT * FROM restock WHERE company=?', (company, ))
+                    c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
                     d = c.fetchone()
+
+                    c.close()
+                    conn.close()
+
                     value = d[1]
                     value = int(value.replace(',',''))
 
@@ -58,10 +69,14 @@ def print_money(ctx, text):
     elif len(text) == 1:
         nick = str(text[0])
         
-        conn = sqlite3.connect('user.db',isolation_level=None)
+        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
         c = conn.cursor()
-        c = c.execute('SELECT id,nickname FROM user')
+        c.execute('SELECT id,nickname FROM "user"')
         user_s = c.fetchall()
+
+        c.close()
+        conn.close()
+
         user_nicks = []
 
         for i in user_s:
@@ -73,10 +88,13 @@ def print_money(ctx, text):
             return ctx_text
             
         else:
-            conn = sqlite3.connect('user.db',isolation_level=None)
+            conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
             c = conn.cursor()
-            c = c.execute('SELECT * FROM user WHERE nickname=?', (nick,))
+            c.execute('SELECT * FROM "user" WHERE nickname=%s', (nick,))
             data = c.fetchone()
+
+            c.close()
+            conn.close()
 
             money = int(data[2])
             nick = data[1]
@@ -92,18 +110,22 @@ def print_money(ctx, text):
                     company = company.replace("'",'')
                     
                     if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
-                        conn = sqlite3.connect('stock.db', isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM stock WHERE company=?', (company, ))
+                        c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
                         value = d[1]
                         value = int(value)
 
                     elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
-                        conn = sqlite3.connect('restock.db', isolation_level=None)
+                        conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
-                        c.execute('SELECT * FROM restock WHERE company=?', (company, ))
+                        c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        c.close()
+                        conn.close()
                         value = d[1]
                         value = int(value.replace(',',''))
 
