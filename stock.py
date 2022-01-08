@@ -122,7 +122,6 @@ def kr_company(com):
     return '대한항공'
   elif com == 'kakao':
     return '카카오'
-
 def get_diff(company, value, amount):
   
   
@@ -134,7 +133,7 @@ def get_diff(company, value, amount):
     c.close()
     conn.close()
     now = d[1]
-    diff = int(value) - int(now)
+    diff = int(now) - int(value)
 
     if diff < 0:
       diff = diff * (-1)
@@ -154,7 +153,7 @@ def get_diff(company, value, amount):
     now = d[1]
     now = now.replace(',','')
 
-    diff = int(value) - int(now)
+    diff = int(now) - int(value)
     
     if diff < 0:
       diff = diff * (-1)
@@ -163,7 +162,6 @@ def get_diff(company, value, amount):
       res = '+' + replace_amount(diff * int(amount))
     
     return res
-
 def stock(ctx, text):
     user_id = ctx.author.id
     user_keys = []
