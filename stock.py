@@ -443,7 +443,6 @@ def stock(ctx, text):
                     amount = amount.replace('"','')
 
                   diff = get_diff(company, value, amount) # -> str() / ex) diff = '+199조 1억 2993'
-                  print(diff)
                   send = send + "#{} [{}] : '{}주'; //{} {}\n손익 → {} {}\n".format(i+1, kor_com, replace_amount(int(com_stock[2])), com_stock[3], com_stock[4], diff[0], diff[1:])
 
               send = send+'```'
@@ -950,8 +949,11 @@ def stock(ctx, text):
                   if not j == '0':
                     com_stock = j.replace('[','').replace(']','').split(',')
                     company = com_stock[0]
+
                     if "'" in company:
                       company = company.replace("'",'')
+                    if '"' in company:
+                      company = company.replace('"','')
                     kor_com = kr_company(company)
 
                     value = com_stock[1]
@@ -961,10 +963,29 @@ def stock(ctx, text):
                       value = value.replace(' ', '')
                     if "'" in value:
                       value = value.replace("'",'')
+                    if '"' in value:
+                      value = value.replace('"','')
+
+                    if ' ' in com_stock[3]:
+                      com_stock[3] = com_stock[3].replace(' ', '')
+                    if "'" in com_stock[3]:
+                      com_stock[3] = com_stock[3].replace("'",'')
+                    if '"' in com_stock[3]:
+                      com_stock[3] = com_stock[3].replace('"','')
+
+                    if ' ' in com_stock[4]:
+                      com_stock[4] = com_stock[4].replace(' ', '')
+                    if "'" in com_stock[4]:
+                      com_stock[4] = com_stock[4].replace("'",'')
+                    if '"' in com_stock[4]:
+                      com_stock[4] = com_stock[4].replace('"','')
+
                     if ' ' in amount:
                       amount = amount.replace(' ', '')
                     if "'" in amount:
                       amount = amount.replace("'",'')
+                    if '"' in amount:
+                      amount = amount.replace('"','')
 
                     diff = get_diff(company, value, amount) # -> str() / ex) diff = '+199조 1억 2993'
                     print(diff)
