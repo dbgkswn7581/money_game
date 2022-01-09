@@ -105,10 +105,11 @@ def print_money(ctx, text):
             c = conn.cursor()
             c.execute('SELECT * FROM "user" WHERE nickname=%s', (nick,))
             data = c.fetchone()
+            print(data)
 
             c.close()
             conn.close()
-
+    
             money = int(data[2])
             nick = data[1]
             stock = data[4]
