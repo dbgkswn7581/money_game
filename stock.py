@@ -967,6 +967,7 @@ def stock(ctx, text):
                       amount = amount.replace("'",'')
 
                     diff = get_diff(company, value, amount) # -> str() / ex) diff = '+199조 1억 2993'
+                    print(diff)
                     send = send + "#{} [{}] : '{}주'; //{} {}\n손익 → {} {}\n".format(i+1, kor_com, replace_amount(int(com_stock[2])), com_stock[3], com_stock[4], diff[0], diff[1:])
 
                 send = send+'```'
