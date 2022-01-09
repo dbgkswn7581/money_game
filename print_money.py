@@ -26,7 +26,10 @@ def print_money(ctx, text):
             if not j == '0':
                 it = j.replace('[','').replace(']','').split(',')
                 company = it[0]
-                company = company.replace("'",'')
+                
+                if '"' in company: company.replace('"', '')
+                if "'" in company: company.replace("'", '')
+                if ' ' in company: company.replace(' ', '')
                 amount = int(it[2])
 
                 if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
