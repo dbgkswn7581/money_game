@@ -39,6 +39,9 @@ def print_money(ctx, text):
                     conn.close()
 
                     value = d[1]
+                    if '"' in value: value.replace('"','')
+                    if "'" in value: value.replace("'",'')
+                    if ' ' in value: value.replace(' ', '')
                     value = int(value)
 
                 elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
@@ -51,6 +54,9 @@ def print_money(ctx, text):
                     conn.close()
 
                     value = d[1]
+                    if '"' in value: value.replace('"','')
+                    if "'" in value: value.replace("'",'')
+                    if ' ' in value: value.replace(' ', '')
                     value = int(value.replace(',',''))
 
                 money = money + (value * amount)
@@ -117,6 +123,9 @@ def print_money(ctx, text):
                         c.close()
                         conn.close()
                         value = d[1]
+                        if '"' in value: value.replace('"','')
+                        if "'" in value: value.replace("'",'')
+                        if ' ' in value: value.replace(' ', '')
                         value = int(value)
 
                     elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
@@ -127,6 +136,9 @@ def print_money(ctx, text):
                         c.close()
                         conn.close()
                         value = d[1]
+                        if '"' in value: value.replace('"','')
+                        if "'" in value: value.replace("'",'')
+                        if ' ' in value: value.replace(' ', '')
                         value = int(value.replace(',',''))
 
                     amount = int(it[2])
