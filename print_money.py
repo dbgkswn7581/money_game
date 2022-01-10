@@ -113,6 +113,8 @@ def print_money(ctx, text):
             money = int(data[2])
             nick = data[1]
             stock = data[4]
+            if '\' in stock: stock.replace('\', '')
+            if '"' in stock: stock.replace('"', '')
             stock = stock.split('&')
             many = 0
 
