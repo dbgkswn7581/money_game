@@ -129,8 +129,9 @@ def print_money(ctx, text):
                         conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
                         c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
-                        d = c.fetchone()
                         time.sleep(.2)
+                        d = c.fetchone()
+                        
                         c.close()
                         conn.close()
                         print(d)
