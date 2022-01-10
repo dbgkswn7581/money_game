@@ -1,6 +1,7 @@
 import psycopg2
 import discord
 from replace import replace_amount
+import time
 
 
 def print_money(ctx, text):
@@ -129,6 +130,7 @@ def print_money(ctx, text):
                         c = conn.cursor()
                         c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        time.sleep(.2)
                         c.close()
                         conn.close()
                         print(d)
@@ -145,6 +147,7 @@ def print_money(ctx, text):
                         c = conn.cursor()
                         c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
                         d = c.fetchone()
+                        time.sleep(.2)
                         c.close()
                         conn.close()
                         value = d[1]
