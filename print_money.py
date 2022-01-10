@@ -133,7 +133,7 @@ def print_money(ctx, text):
                         c.close()
                         conn.close()
                         value = d[1]
-                        print('value : ", value)
+                        print('value : ', value)
                         if '"' in value: value.replace('"','')
                         if "'" in value: value.replace("'",'')
                         if ' ' in value: value.replace(' ', '')
