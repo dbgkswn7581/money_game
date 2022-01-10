@@ -131,7 +131,9 @@ def print_money(ctx, text):
                         d = c.fetchone()
                         c.close()
                         conn.close()
+                        print(d)
                         value = d[1]
+                        
                         print('value : ', value)
                         if '"' in value: value.replace('"','')
                         if "'" in value: value.replace("'",'')
