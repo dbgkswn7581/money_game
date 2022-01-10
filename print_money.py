@@ -27,8 +27,7 @@ def print_money(ctx, text):
                 it = j.replace('[','').replace(']','').split(',')
                 company = it[0]
                 
-                if '"' in company: company.replace('"', '')
-                if "'" in company: company.replace("'", '')
+
                 if ' ' in company: company.replace(' ', '')
                 amount = it[2]
                 if '"' in amount: amount.replace('"', '')
@@ -36,7 +35,7 @@ def print_money(ctx, text):
                 if ' ' in amount: amount.replace(' ', '')
                 amount = int(amount)
 
-                if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
+                if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom' or company == "'meta'" or company == "'didim'" or company == "'gonglyoug'" or company == "'nuli'" or company == "'hangil'" or company == "'singom'":
                     conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
                     c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
@@ -51,7 +50,7 @@ def print_money(ctx, text):
                     if ' ' in value: value.replace(' ', '')
                     value = int(value)
 
-                elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
+                elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao' or company == "'samsung'" or company == "'hyundai'" or company == "'naver'" or company == "'kolon'" or company == "'korean'" or company == "'kakao'":
                     conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
                     c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
@@ -121,12 +120,11 @@ def print_money(ctx, text):
                 if not j == '0':
                     it = j.replace('[','').replace(']','').split(',')
                     company = it[0]
-                    if '"' in company: company.replace('"', '')
-                    if "'" in company: company.replace("'", '')
+                    
                     if ' ' in company: company.replace(' ', '')
                     print(company)
                     
-                    if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom':
+                    if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom' or company == "'meta'" or company == "'didim'" or company == "'gonglyoug'" or company == "'nuli'" or company == "'hangil'" or company == "'singom'":
                         conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
                         c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
@@ -140,7 +138,7 @@ def print_money(ctx, text):
                         if ' ' in value: value.replace(' ', '')
                         value = int(value)
 
-                    elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao':
+                    elif company == 'samsung' or company == 'hyundai' or company == 'naver' or company == 'kolon' or company == 'korean' or company == 'kakao' or company == "'samsung'" or company == "'hyundai'" or company == "'naver'" or company == "'kolon'" or company == "'korean'" or company == "'kakao'":
                         conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                         c = conn.cursor()
                         c.execute('SELECT * FROM restock WHERE company=%s', (company, ))
