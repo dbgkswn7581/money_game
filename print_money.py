@@ -14,7 +14,7 @@ def print_money(ctx, text):
         data = c.fetchone()
 
         c.close()
-        conn.close()
+#         conn.close()
 
         money = int(data[2])
         nick = data[1]
@@ -37,7 +37,7 @@ def print_money(ctx, text):
                 amount = int(amount)
 
                 if company == 'meta' or company == 'didim' or company == 'gonglyoug' or company == 'nuli' or company == 'hangil' or company == 'singom' or company == "'meta'" or company == "'didim'" or company == "'gonglyoug'" or company == "'nuli'" or company == "'hangil'" or company == "'singom'":
-                    conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
+#                     conn = psycopg2.connect(host='ec2-3-209-234-80.compute-1.amazonaws.com',dbname='d8sv37cbum5a7k',user='kyshvxsusgztbc',password='938df8636f301f7656f277c4e2684ff5fbaba1fa68822cd73785e33c7bea62f2',port=5432)
                     c = conn.cursor()
                     c.execute('SELECT * FROM stock WHERE company=%s', (company, ))
                     d = c.fetchone()
