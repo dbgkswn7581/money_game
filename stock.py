@@ -545,13 +545,14 @@ def stock(ctx, text):
                                   c.close()
                                   conn.close()
 
-                                  amount = int(money / now_value)
+                                  
 
-                                  if (amount * now_value) > money:
+                                  if now_value > money:
                                       ctx_text = '보유 금액이 부족합니다.'
                                       return ctx_text
                                       
                                   else:
+                                      amount = int(money / now_value)
                                       time = get_time()
                                       date = time['date']
                                       clock = time['clock']
